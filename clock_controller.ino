@@ -19,7 +19,7 @@ const char *four = "acdg";
 const char *five = "abdeg";
 const char *six = "abdefg";
 const char *seven = "bcd";
-const char *eight = "abcdefg";
+const char *eight = all;
 const char *nine = "abcdg";
 
 const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
@@ -30,9 +30,14 @@ typedef struct {
 
 display_t displays[DISPLAYS];
 
-void filter_display_segments(display_t *display, const char* segments) {
+/** Disable those segments that are not part of the given group of segments.
+    For example: if you have a nice animation playing and want to show the
+    number "1", run this function with numbers[1] and it should extinguish the
+    segments that don't make "1"
+*/
+void disable_incorrect_segments(display_t *display, const char* segments) {
   char segments_to_filter[SEGMENTS_PER_DISPLAY + 1];
-  
+
   uint8_t segment_count;
   const char *segment_ptr = segments;
   for (segment_count = 0; *segment_ptr++ != 0; segment_count++);
@@ -40,22 +45,37 @@ void filter_display_segments(display_t *display, const char* segments) {
   uint8_t segments_out = SEGMENTS_PER_DISPLAY - segment_count;
   segments_to_filter[segments_out] = 0;
 
-  char *filtered = segments_to_filter;  
+  char *filtered = segments_to_filter;
 
-  for (int i = 0; i < SEGMENTS_PER_DISPLAY; i++) {
-    for (int x = 0; x < segment_count; x++){
-      if (segments[x] - 'a' == x) {
-        *filtered++ = x + 'a';
+  for (uint8_t i = 'a'; i < SEGMENTS_PER_DISPLAY + 'a'; i++) {
+    uint8_t contains = 0;
+    for (uint8_t x = 0; x < segment_count; x++) {
+      if (segments[x] == i) {
+        contains = 1;
       }
     }
+    if (!contains) {
+      *filtered++ = i;
+    }
   }
-
   set_number(display, segments_to_filter, CRGB(0, 0, 0));
+
+}
+
+void display_time(display_t *displays, uint32_t seconds) {
+  uint32_t days = (seconds / 86400);
+  uint32_t hours = (seconds % 86400) / 3600;
+  uint32_t minutes = (seconds % 3600) / 60;
   
+  set_number(&displays[0], numbers[hours / 10], CRGB(50, 50, 50));
+  set_number(&displays[1], numbers[hours % 10], CRGB(50, 50, 50));
+  set_number(&displays[2], numbers[minutes / 10], CRGB(50, 50, 50));
+  set_number(&displays[3], numbers[minutes % 10], CRGB(50, 50, 50));
+
 }
 
 void clear_display(display_t *display) {
-  for (uint8_t i = 0; i < LEDS_PER_DISPLAY; i++){
+  for (uint8_t i = 0; i < LEDS_PER_DISPLAY; i++) {
     display->leds[i] = CRGB(0, 0, 0);
   }
 }
@@ -67,11 +87,11 @@ void set_number(display_t *display, const char* segments, CRGB color) {
       uint8_t segment_num = actual_segment - 'a';
       uint8_t start = segment_num * LEDS_PER_SEGMENT;
       uint8_t stop = (segment_num + 1) * LEDS_PER_SEGMENT;
-    
+
       for (uint8_t i = start; i < stop; i++) {
         display->leds[i] = color;
       }
-    
+
     }
   } while (*segments++ != 0);
 }
@@ -86,11 +106,12 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  static int current_num = 0;
-  current_num = (current_num + 1) % 10;
-  delay(50);
-  for (int i = 0; i < DISPLAYS; i++){
+  static uint32_t current_seconds = 0;
+  current_seconds = current_seconds + 60;
+  delay(10);
+  for (uint8_t i = 0; i < DISPLAYS; i++){
     clear_display(&displays[i]);
-  }   
-  FastLED.show(); 
+  }
+  display_time(displays, current_seconds);
+  FastLED.show();
 }
