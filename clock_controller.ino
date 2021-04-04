@@ -42,12 +42,20 @@ typedef struct {
   CRGB leds[LEDS_PER_DISPLAY];
 } display_t;
 
+typedef struct {
+  CRGB start_color;
+  CRGB end_color;
+  uint8_t start_col;
+  uint8_t end_col;
+} rgb_wave;
+
 void disable_incorrect_segments(display_t *display, char *number);
 void set_column(uint8_t column, display_t *display_list, CRGB color);
 void set_segments(display_t *display, char *segments, CRGB color);
 void set_inverted_segments(display_t *display, char *segments, CRGB color);
 void clear_display(display_t *display);
 void display_time(display_t *display_list, uint32_t seconds);
+void show_rgb_wave(rgb_wave *wave, display_t *display_list);
 
 display_t displays[DISPLAYS];
 uint32_t current_time_seconds = 0;
@@ -112,22 +120,25 @@ void loop() {
   // put your main code here, to run repeatedly:
   static int column_count = 0;
   static int down = 0;
+  static rgb_wave wave = {CRGB(0, 255, 0), CRGB(255, 0, 0), 0, COLUMNS};
 
   delay(10);
 
-  if (column_count == 0){
-    down = 0;
-  } else if (column_count == COLUMNS){
-    down = 1;
-  }
+  show_rgb_wave(&wave, displays);
 
-  if (down){
-    column_count--;
-    set_column(column_count, displays, CRGB(0, 0, 0));
-  } else {
-    set_column(column_count, displays, CRGB(0, 255, 0));
-    column_count++;
-  }
+//  if (column_count == 0){
+//    down = 0;
+//  } else if (column_count == COLUMNS){
+//    down = 1;
+//  }
+//
+//  if (down){
+//    column_count--;
+//    set_column(column_count, displays, CRGB(0, 0, 0));
+//  } else {
+//    set_column(column_count, displays, CRGB(0, 255, 0));
+//    column_count++;
+//  }
   
   FastLED.show();
 }
@@ -217,5 +228,22 @@ void set_column(int column, display_t *displays_list, CRGB color){
     display->leds[LEDS_PER_SEGMENT + column - 1] = color;
     display->leds[(5 * LEDS_PER_SEGMENT) - column] = color;
     display->leds[(6 * LEDS_PER_SEGMENT) + column - 1] = color;
+  }
+}
+
+void show_rgb_wave(rgb_wave *wave, display_t *display_list) {
+  uint8_t start = wave->start_col;
+  uint8_t end = wave->end_col;
+  CRGB sc = wave->start_color;
+  CRGB ec = wave->end_color;
+  float total_distance = end - start;
+  for (int i = start; i < end; i++){
+    // Calculate the current 
+    float current_distance = ((float) (start + i)) / total_distance; 
+    CRGB color;
+    color.r = sc.r + (ec.r - sc.r) * current_distance;
+    color.g = sc.g + (ec.g - sc.g) * current_distance;
+    color.b = sc.b + (ec.b - sc.b) * current_distance;
+    set_column(i, display_list, color);
   }
 }
