@@ -143,7 +143,8 @@ void getTime(){
   radioSerial.print("AT+CIPSNTPTIME?\r\n");
   radioSerial.readBytes(all_str, START_CHARS);
   radioSerial.readBytes(all_str, TIME_CHARS);
-  
+
+  // Don't remove printouts: they make it work?
   Serial.println("Time chars: ");
   for (int i = 0; i < TIME_CHARS; i++){
      Serial.print((char) all_str[i]);
