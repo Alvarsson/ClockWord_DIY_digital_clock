@@ -53,6 +53,10 @@ display_t displays[DISPLAYS];
     segments that don't make "1"
 */
 void disable_incorrect_segments(display_t *display, const char* segments) {
+  set_inverted_segments(display, segments, CRGB(0, 0, 0));
+}
+
+void set_inverted_segments(display_t *display, const char* segments, CRGB color) {
   char segments_to_filter[SEGMENTS_PER_DISPLAY + 1];
 
   uint8_t segment_count;
@@ -75,7 +79,7 @@ void disable_incorrect_segments(display_t *display, const char* segments) {
       *filtered++ = i;
     }
   }
-  set_number(display, segments_to_filter, CRGB(0, 0, 0));
+  set_number(display, segments_to_filter, color);
 
 }
 
@@ -84,10 +88,10 @@ void display_time(display_t *displays, uint32_t seconds) {
   uint32_t hours = (seconds % 86400) / 3600;
   uint32_t minutes = (seconds % 3600) / 60;
   
-  set_number(&displays[0], numbers[hours / 10], CRGB(50, 50, 50));
-  set_number(&displays[1], numbers[hours % 10], CRGB(50, 50, 50));
-  set_number(&displays[2], numbers[minutes / 10], CRGB(50, 50, 50));
-  set_number(&displays[3], numbers[minutes % 10], CRGB(50, 50, 50));
+  disable_incorrect_segments(&displays[0], numbers[hours / 10]);
+  disable_incorrect_segments(&displays[1], numbers[hours % 10]);
+  disable_incorrect_segments(&displays[2], numbers[minutes / 10]);
+  disable_incorrect_segments(&displays[3], numbers[minutes % 10]);
 
 }
 
@@ -172,7 +176,7 @@ void loop() {
   delay(1000);
   getTime();
   for (int i = 0; i < DISPLAYS; i++){
-    clear_display(&displays[i]);
+    set_number(&displays[i], all, CRGB(255, 0, 0));
   }
   display_time(displays, current_time_seconds);
   FastLED.show();
