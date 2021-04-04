@@ -5,7 +5,7 @@
 #define SEGMENTS_PER_DISPLAY 7
 #define LEDS_PER_SEGMENT 6
 #define LEDS_PER_DISPLAY LEDS_PER_SEGMENT * SEGMENTS_PER_DISPLAY
-#define ROWS (LEDS_PER_SEGMENT + 2) * DISPLAYS
+#define COLUMNS (LEDS_PER_SEGMENT + 2) * DISPLAYS
 
 #define DISPLAY0_PIN 2
 #define DISPLAY1_PIN 3
@@ -36,17 +36,101 @@ const char *seven = "bcd";
 const char *eight = all;
 const char *nine = "abcdg";
 
-const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
-
-uint32_t current_time_seconds = 0;
-
 SoftwareSerial radioSerial = SoftwareSerial(SW_RX, SW_TX);
 
 typedef struct {
   CRGB leds[LEDS_PER_DISPLAY];
 } display_t;
 
+void disable_incorrect_segments(display_t *, char *);
+void set_column(int, display_t *, CRGB);
+void set_segments(display_t *, char*, CRGB);
+void set_inverted_segments(display_t *, char *, CRGB);
+void clear_display(display_t *);
+void display_time(display_t *, uint32_t);
+
 display_t displays[DISPLAYS];
+uint32_t current_time_seconds = 0;
+
+const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
+
+void setup() {
+  FastLED.addLeds<NEOPIXEL, DISPLAY0_PIN>(displays[0].leds, LEDS_PER_DISPLAY);
+  FastLED.addLeds<NEOPIXEL, DISPLAY1_PIN>(displays[1].leds, LEDS_PER_DISPLAY);
+  FastLED.addLeds<NEOPIXEL, DISPLAY2_PIN>(displays[2].leds, LEDS_PER_DISPLAY);
+  FastLED.addLeds<NEOPIXEL, DISPLAY3_PIN>(displays[3].leds, LEDS_PER_DISPLAY);
+  FastLED.show();
+
+
+  pinMode(SW_RX, INPUT);
+  pinMode(SW_TX, OUTPUT);
+  
+  Serial.begin(4800);
+
+  radioSerial.begin(4800);
+  radioSerial.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
+  // Discard response
+  while (radioSerial.available()) Serial.println((char) radioSerial.read());
+
+  delay(100);
+
+  while (radioSerial.available()) Serial.println((char) radioSerial.read());
+
+}
+
+void getTime(){
+  uint8_t all_str[TIME_CHARS];
+
+  radioSerial.print("AT+CIPSNTPTIME?\r\n");
+  radioSerial.readBytes(all_str, START_CHARS);
+  radioSerial.readBytes(all_str, TIME_CHARS);
+
+  // Don't remove printouts: they make it work?
+  Serial.println("Time chars: ");
+  for (int i = 0; i < TIME_CHARS; i++){
+     Serial.print((char) all_str[i]);
+  }
+  Serial.println("");
+  Serial.println("Time chars done");
+  
+  Serial.println("-----");
+  Serial.println((char) all_str[HOURS_LSD_OFFSET]);
+  Serial.println("-----");
+
+  uint32_t hours = ((all_str[HOURS_MSD_OFFSET] - '0') * 10) + (all_str[HOURS_LSD_OFFSET] - '0');
+  uint32_t minutes = ((all_str[MINUTES_MSD_OFFSET] - '0') * 10) + (all_str[MINUTES_LSD_OFFSET] - '0');
+  uint32_t seconds = ((all_str[SECONDS_MSD_OFFSET] - '0') * 10) + (all_str[SECONDS_LSD_OFFSET] - '0');
+
+  current_time_seconds = (hours * 3600) + (minutes * 60) + seconds;
+
+  while (radioSerial.available()) radioSerial.read();
+
+  Serial.println(current_time_seconds);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  static int column_count = 0;
+  static int down = 0;
+
+  delay(10);
+
+  if (column_count == 0){
+    down = 0;
+  } else if (column_count == COLUMNS){
+    down = 1;
+  }
+
+  if (down){
+    column_count--;
+    set_column(column_count, displays, CRGB(0, 0, 0));
+  } else {
+    set_column(column_count, displays, CRGB(0, 255, 0));
+    column_count++;
+  }
+  
+  FastLED.show();
+}
 
 /** Disable those segments that are not part of the given group of segments.
     For example: if you have a nice animation playing and want to show the
@@ -118,60 +202,6 @@ void set_segments(display_t *display, const char* segments, CRGB color) {
   } while (*segments++ != 0);
 }
 
-void setup() {
-  FastLED.addLeds<NEOPIXEL, DISPLAY0_PIN>(displays[0].leds, LEDS_PER_DISPLAY);
-  FastLED.addLeds<NEOPIXEL, DISPLAY1_PIN>(displays[1].leds, LEDS_PER_DISPLAY);
-  FastLED.addLeds<NEOPIXEL, DISPLAY2_PIN>(displays[2].leds, LEDS_PER_DISPLAY);
-  FastLED.addLeds<NEOPIXEL, DISPLAY3_PIN>(displays[3].leds, LEDS_PER_DISPLAY);
-  FastLED.show();
-
-
-  pinMode(SW_RX, INPUT);
-  pinMode(SW_TX, OUTPUT);
-  
-  Serial.begin(4800);
-
-  radioSerial.begin(4800);
-  radioSerial.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
-  // Discard response
-  while (radioSerial.available()) Serial.println((char) radioSerial.read());
-
-  delay(100);
-
-  while (radioSerial.available()) Serial.println((char) radioSerial.read());
-
-}
-
-void getTime(){
-  uint8_t all_str[TIME_CHARS];
-
-  radioSerial.print("AT+CIPSNTPTIME?\r\n");
-  radioSerial.readBytes(all_str, START_CHARS);
-  radioSerial.readBytes(all_str, TIME_CHARS);
-
-  // Don't remove printouts: they make it work?
-  Serial.println("Time chars: ");
-  for (int i = 0; i < TIME_CHARS; i++){
-     Serial.print((char) all_str[i]);
-  }
-  Serial.println("");
-  Serial.println("Time chars done");
-  
-  Serial.println("-----");
-  Serial.println((char) all_str[HOURS_LSD_OFFSET]);
-  Serial.println("-----");
-
-  uint32_t hours = ((all_str[HOURS_MSD_OFFSET] - '0') * 10) + (all_str[HOURS_LSD_OFFSET] - '0');
-  uint32_t minutes = ((all_str[MINUTES_MSD_OFFSET] - '0') * 10) + (all_str[MINUTES_LSD_OFFSET] - '0');
-  uint32_t seconds = ((all_str[SECONDS_MSD_OFFSET] - '0') * 10) + (all_str[SECONDS_LSD_OFFSET] - '0');
-
-  current_time_seconds = (hours * 3600) + (minutes * 60) + seconds;
-
-  while (radioSerial.available()) radioSerial.read();
-
-  Serial.println(current_time_seconds);
-}
-
 void set_column(int column, display_t *displays_list, CRGB color){
   display_t *display = &displays_list[column / (LEDS_PER_SEGMENT + 2)];
   column = column % (LEDS_PER_SEGMENT + 2);
@@ -188,28 +218,4 @@ void set_column(int column, display_t *displays_list, CRGB color){
     display->leds[(5 * LEDS_PER_SEGMENT) - column] = color;
     display->leds[(6 * LEDS_PER_SEGMENT) + column - 1] = color;
   }
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  static int column_count = 0;
-  static int down = 0;
-
-  delay(10);
-
-  if (column_count == 0){
-    down = 0;
-  } else if (column_count == ROWS){
-    down = 1;
-  }
-
-  if (down){
-    column_count--;
-    set_column(column_count, displays, CRGB(0, 0, 0));
-  } else {
-    set_column(column_count, displays, CRGB(0, 255, 0));
-    column_count++;
-  }
-  
-  FastLED.show();
 }
