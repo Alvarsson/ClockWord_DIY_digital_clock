@@ -35,7 +35,7 @@ struct Loop strip0loop0(1, false, 1);
 
 //[GLOBAL_VARIABLES]
 
-void setup() {
+/* void setup() {
 
   //Your setup here:
 
@@ -48,7 +48,7 @@ void loop() {
 
   strips_loop();
 }
-
+*/
 void strips_loop() {
   if(strip0_loop0() & 0x01)
     strip_0.strip.show();

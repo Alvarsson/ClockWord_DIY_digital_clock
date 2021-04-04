@@ -5,6 +5,7 @@
 #define SEGMENTS_PER_DISPLAY 7
 #define LEDS_PER_SEGMENT 6
 #define LEDS_PER_DISPLAY LEDS_PER_SEGMENT * SEGMENTS_PER_DISPLAY
+#define ROWS (LEDS_PER_SEGMENT + 2) * DISPLAYS
 
 #define DISPLAY0_PIN 2
 #define DISPLAY1_PIN 3
@@ -79,7 +80,7 @@ void set_inverted_segments(display_t *display, const char* segments, CRGB color)
       *filtered++ = i;
     }
   }
-  set_number(display, segments_to_filter, color);
+  set_segments(display, segments_to_filter, color);
 
 }
 
@@ -101,7 +102,7 @@ void clear_display(display_t *display) {
   }
 }
 
-void set_number(display_t *display, const char* segments, CRGB color) {
+void set_segments(display_t *display, const char* segments, CRGB color) {
   do {
     uint8_t actual_segment = *segments;
     if (actual_segment >= 'a' && actual_segment <= 'g') {
@@ -135,7 +136,7 @@ void setup() {
   // Discard response
   while (radioSerial.available()) Serial.println((char) radioSerial.read());
 
-  delay(5000);
+  delay(100);
 
   while (radioSerial.available()) Serial.println((char) radioSerial.read());
 
@@ -171,13 +172,44 @@ void getTime(){
   Serial.println(current_time_seconds);
 }
 
+void set_column(int column, display_t *displays_list, CRGB color){
+  display_t *display = &displays_list[column / (LEDS_PER_SEGMENT + 2)];
+  column = column % (LEDS_PER_SEGMENT + 2);
+  
+  CRGB *leds[2 * LEDS_PER_SEGMENT];
+  int led_count;
+  if (column == 0) {
+    set_segments(display, "af", color);
+  } else if (column == LEDS_PER_SEGMENT + 1){
+    set_segments(display, "cd", color);
+  } else {
+    led_count = 3;
+    display->leds[LEDS_PER_SEGMENT + column - 1] = color;
+    display->leds[(5 * LEDS_PER_SEGMENT) - column] = color;
+    display->leds[(6 * LEDS_PER_SEGMENT) + column - 1] = color;
+  }
+}
+
 void loop() {
   // put your main code here, to run repeatedly:
-  delay(1000);
-  getTime();
-  for (int i = 0; i < DISPLAYS; i++){
-    set_number(&displays[i], all, CRGB(255, 0, 0));
+  static int column_count = 0;
+  static int down = 0;
+
+  delay(10);
+
+  if (column_count == 0){
+    down = 0;
+  } else if (column_count == ROWS){
+    down = 1;
   }
-  display_time(displays, current_time_seconds);
+
+  if (down){
+    column_count--;
+    set_column(column_count, displays, CRGB(0, 0, 0));
+  } else {
+    set_column(column_count, displays, CRGB(0, 255, 0));
+    column_count++;
+  }
+  
   FastLED.show();
 }
