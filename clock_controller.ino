@@ -1,4 +1,5 @@
 #include "FastLED.h"
+#include <SoftwareSerial.h>
 
 #define DISPLAYS 4
 #define SEGMENTS_PER_DISPLAY 7
@@ -9,6 +10,18 @@
 #define DISPLAY1_PIN 3
 #define DISPLAY2_PIN 4
 #define DISPLAY3_PIN 5
+
+#define SW_RX 6
+#define SW_TX 7
+
+#define START_CHARS 17
+#define TIME_CHARS 42
+#define HOURS_MSD_OFFSET 24
+#define HOURS_LSD_OFFSET 25
+#define MINUTES_MSD_OFFSET 27
+#define MINUTES_LSD_OFFSET 28
+#define SECONDS_MSD_OFFSET 30
+#define SECONDS_LSD_OFFSET 31
 
 const char *all = "abcdefg";
 const char *zero = "abcdef";
@@ -23,6 +36,10 @@ const char *eight = all;
 const char *nine = "abcdg";
 
 const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
+
+uint32_t current_time_seconds = 0;
+
+SoftwareSerial radioSerial = SoftwareSerial(SW_RX, SW_TX);
 
 typedef struct {
   CRGB leds[LEDS_PER_DISPLAY];
@@ -102,16 +119,60 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, DISPLAY2_PIN>(displays[2].leds, LEDS_PER_DISPLAY);
   FastLED.addLeds<NEOPIXEL, DISPLAY3_PIN>(displays[3].leds, LEDS_PER_DISPLAY);
   FastLED.show();
+
+
+  pinMode(SW_RX, INPUT);
+  pinMode(SW_TX, OUTPUT);
+  
+  Serial.begin(4800);
+
+  radioSerial.begin(4800);
+  radioSerial.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
+  // Discard response
+  while (radioSerial.available()) Serial.println((char) radioSerial.read());
+
+  delay(5000);
+
+  while (radioSerial.available()) Serial.println((char) radioSerial.read());
+
+}
+
+void getTime(){
+  uint8_t all_str[TIME_CHARS];
+
+  radioSerial.print("AT+CIPSNTPTIME?\r\n");
+  radioSerial.readBytes(all_str, START_CHARS);
+  radioSerial.readBytes(all_str, TIME_CHARS);
+  
+  Serial.println("Time chars: ");
+  for (int i = 0; i < TIME_CHARS; i++){
+     Serial.print((char) all_str[i]);
+  }
+  Serial.println("");
+  Serial.println("Time chars done");
+  
+  Serial.println("-----");
+  Serial.println((char) all_str[HOURS_LSD_OFFSET]);
+  Serial.println("-----");
+
+  uint32_t hours = ((all_str[HOURS_MSD_OFFSET] - '0') * 10) + (all_str[HOURS_LSD_OFFSET] - '0');
+  uint32_t minutes = ((all_str[MINUTES_MSD_OFFSET] - '0') * 10) + (all_str[MINUTES_LSD_OFFSET] - '0');
+  uint32_t seconds = ((all_str[SECONDS_MSD_OFFSET] - '0') * 10) + (all_str[SECONDS_LSD_OFFSET] - '0');
+
+  current_time_seconds = (hours * 3600) + (minutes * 60) + seconds;
+
+  while (radioSerial.available()) radioSerial.read();
+
+  Serial.println(current_time_seconds);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  static uint32_t current_seconds = 0;
-  current_seconds = current_seconds + 60;
-  delay(10);
-  for (uint8_t i = 0; i < DISPLAYS; i++){
+  delay(1000);
+  getTime();
+  for (int i = 0; i < DISPLAYS; i++){
     clear_display(&displays[i]);
   }
-  display_time(displays, current_seconds);
+  display_time(displays, current_time_seconds);
   FastLED.show();
 }
