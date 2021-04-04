@@ -42,12 +42,12 @@ typedef struct {
   CRGB leds[LEDS_PER_DISPLAY];
 } display_t;
 
-void disable_incorrect_segments(display_t *, char *);
-void set_column(int, display_t *, CRGB);
-void set_segments(display_t *, char*, CRGB);
-void set_inverted_segments(display_t *, char *, CRGB);
-void clear_display(display_t *);
-void display_time(display_t *, uint32_t);
+void disable_incorrect_segments(display_t *display, char *number);
+void set_column(uint8_t column, display_t *display_list, CRGB color);
+void set_segments(display_t *display, char *segments, CRGB color);
+void set_inverted_segments(display_t *display, char *segments, CRGB color);
+void clear_display(display_t *display);
+void display_time(display_t *display_list, uint32_t seconds);
 
 display_t displays[DISPLAYS];
 uint32_t current_time_seconds = 0;
