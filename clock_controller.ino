@@ -5,7 +5,7 @@
 #define SEGMENTS_PER_DISPLAY 7
 #define LEDS_PER_SEGMENT 6
 #define LEDS_PER_DISPLAY LEDS_PER_SEGMENT * SEGMENTS_PER_DISPLAY
-#define COLUMNS (LEDS_PER_SEGMENT + 2) * DISPLAYS
+#define COLUMNS ((LEDS_PER_SEGMENT + 2) * DISPLAYS)
 
 #define DISPLAY0_PIN 2
 #define DISPLAY1_PIN 3
@@ -72,21 +72,22 @@ void setup() {
 
   pinMode(SW_RX, INPUT);
   pinMode(SW_TX, OUTPUT);
-  
+
   Serial.begin(4800);
 
   radioSerial.begin(4800);
   radioSerial.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
   // Discard response
-  while (radioSerial.available()) Serial.println((char) radioSerial.read());
+  while (radioSerial.available()) radioSerial.read();
 
   delay(100);
 
-  while (radioSerial.available()) Serial.println((char) radioSerial.read());
+  while (radioSerial.available()) radioSerial.read();
 
+  Serial.println("Start");
 }
 
-void getTime(){
+void getTime() {
   uint8_t all_str[TIME_CHARS];
 
   radioSerial.print("AT+CIPSNTPTIME?\r\n");
@@ -95,12 +96,12 @@ void getTime(){
 
   // Don't remove printouts: they make it work?
   Serial.println("Time chars: ");
-  for (int i = 0; i < TIME_CHARS; i++){
-     Serial.print((char) all_str[i]);
+  for (int i = 0; i < TIME_CHARS; i++) {
+    Serial.print((char) all_str[i]);
   }
   Serial.println("");
   Serial.println("Time chars done");
-  
+
   Serial.println("-----");
   Serial.println((char) all_str[HOURS_LSD_OFFSET]);
   Serial.println("-----");
@@ -120,26 +121,26 @@ void loop() {
   // put your main code here, to run repeatedly:
   static int column_count = 0;
   static int down = 0;
-  static rgb_wave wave = {CRGB(0, 255, 0), CRGB(255, 0, 0), 0, COLUMNS};
+  static rgb_wave wave = {CRGB(50, 0, 0), CRGB(0, 50, 0), 0, COLUMNS};
 
   delay(10);
 
-  show_rgb_wave(&wave, displays);
+  wave.start_col += 1;
+  wave.end_col += 1;
 
-//  if (column_count == 0){
-//    down = 0;
-//  } else if (column_count == COLUMNS){
-//    down = 1;
-//  }
-//
-//  if (down){
-//    column_count--;
-//    set_column(column_count, displays, CRGB(0, 0, 0));
-//  } else {
-//    set_column(column_count, displays, CRGB(0, 255, 0));
-//    column_count++;
-//  }
+  if (wave.start_col > wave.end_col){
+    wave.start_col += COLUMNS;
+    wave.end_col += COLUMNS;
+  }
   
+  Serial.print(wave.start_col);
+  Serial.print(", ");
+  Serial.println(wave.end_col);
+  for (int i = 0; i < DISPLAYS; i++) {
+    clear_display(&displays[i]);
+  }
+
+  show_rgb_wave(&wave, displays);
   FastLED.show();
 }
 
@@ -183,7 +184,7 @@ void display_time(display_t *displays, uint32_t seconds) {
   uint32_t days = (seconds / 86400);
   uint32_t hours = (seconds % 86400) / 3600;
   uint32_t minutes = (seconds % 3600) / 60;
-  
+
   disable_incorrect_segments(&displays[0], numbers[hours / 10]);
   disable_incorrect_segments(&displays[1], numbers[hours % 10]);
   disable_incorrect_segments(&displays[2], numbers[minutes / 10]);
@@ -213,21 +214,23 @@ void set_segments(display_t *display, const char* segments, CRGB color) {
   } while (*segments++ != 0);
 }
 
-void set_column(int column, display_t *displays_list, CRGB color){
-  display_t *display = &displays_list[column / (LEDS_PER_SEGMENT + 2)];
-  column = column % (LEDS_PER_SEGMENT + 2);
+void set_column(uint8_t column, display_t *displays_list, CRGB color) {
+  if (column <= COLUMNS) {
+    display_t *display = &displays_list[column / (LEDS_PER_SEGMENT + 2)];
+    column = column % (LEDS_PER_SEGMENT + 2);
   
-  CRGB *leds[2 * LEDS_PER_SEGMENT];
-  int led_count;
-  if (column == 0) {
-    set_segments(display, "af", color);
-  } else if (column == LEDS_PER_SEGMENT + 1){
-    set_segments(display, "cd", color);
-  } else {
-    led_count = 3;
-    display->leds[LEDS_PER_SEGMENT + column - 1] = color;
-    display->leds[(5 * LEDS_PER_SEGMENT) - column] = color;
-    display->leds[(6 * LEDS_PER_SEGMENT) + column - 1] = color;
+    CRGB *leds[2 * LEDS_PER_SEGMENT];
+    int led_count;
+    if (column == 0) {
+      set_segments(display, "af", color);
+    } else if (column == LEDS_PER_SEGMENT + 1) {
+      set_segments(display, "cd", color);
+    } else {
+      led_count = 3;
+      display->leds[LEDS_PER_SEGMENT + column - 1] = color;
+      display->leds[(5 * LEDS_PER_SEGMENT) - column] = color;
+      display->leds[(6 * LEDS_PER_SEGMENT) + column - 1] = color;
+    }
   }
 }
 
@@ -237,13 +240,14 @@ void show_rgb_wave(rgb_wave *wave, display_t *display_list) {
   CRGB sc = wave->start_color;
   CRGB ec = wave->end_color;
   uint16_t total_distance = end - start;
-  for (int i = start; i < end; i++){
-    // Calculate the current 
-    uint16_t current_distance = ((start + i) * 255) / total_distance; 
+
+  for (int i = start; i < end; i++) {
+    // Calculate the current
+    uint16_t current_distance = ((i - start + 1) * 255) / total_distance;
     CRGB color;
-    color.r = (sc.r + (ec.r - sc.r) * current_distance) / 255;
-    color.g = (sc.g + (ec.g - sc.g) * current_distance) / 255;
-    color.b = (sc.b + (ec.b - sc.b) * current_distance) / 255;
-    set_column(i, display_list, color);
+    color.r = sc.r + (((ec.r - sc.r) * current_distance) / 255);
+    color.g = sc.g + (((ec.g - sc.g) * current_distance) / 255);
+    color.b = sc.b + (((ec.b - sc.b) * current_distance) / 255);
+    set_column(i % COLUMNS, display_list, color);
   }
 }
