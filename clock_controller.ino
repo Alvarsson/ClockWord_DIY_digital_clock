@@ -64,12 +64,12 @@ void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress);
 void init_waves(rgb_wave *wave_storage, CRGB *colors, uint8_t color_count, uint8_t total_len);
 
 display_t displays[DISPLAYS];
-uint32_t current_time_seconds = 0;
+uint32_t current_time_seconds = 49020 - 60;
 
 const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
 
 #define COLOR_COUNT 4
-CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(0, 50, 50)};
+CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(0, 50, 0)};
 rgb_wave waves[COLOR_COUNT];
 
 void setup() {
@@ -129,20 +129,32 @@ void get_time() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  static int count = 1000;
+  static int count = 0;
   delay(10);
   
+  if (current_time_seconds % 60 == 0){
+    get_time();
+  }
+  
+  if (count++ == 100){
+    current_time_seconds += 1;
+    count = 0;
+  }
+ 
   for (int i = 0; i < DISPLAYS; i++) {
     clear_display(&displays[i]);
   }
 
-  for (uint8_t i = 0; i < COLOR_COUNT; i++) {
-    show_rgb_wave(&waves[i], displays, 4);
+  if (current_time_seconds >= 49020 && current_time_seconds <= 49020 + 60) {
+    for (uint8_t i = 0; i < COLOR_COUNT; i++) {
+      show_rgb_wave(&waves[i], displays, 3);
+    }
+  } else {
+    for (uint8_t i = 0; i < DISPLAYS; i++){
+      set_segments(&displays[i], all, CRGB(50, 50, 0));
+    }
   }
-
-
-  current_time_seconds += 60;
- 
+  
   display_time(displays, current_time_seconds);
   FastLED.show();
 }
