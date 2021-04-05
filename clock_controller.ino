@@ -61,6 +61,7 @@ void set_inverted_segments(display_t *display, const char *segments, CRGB color)
 void clear_display(display_t *display);
 void display_time(display_t *display_list, uint32_t seconds);
 void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress);
+void init_waves(rgb_wave *wave_storage, CRGB *colors, uint8_t color_count, uint8_t total_len);
 
 display_t displays[DISPLAYS];
 uint32_t current_time_seconds = 0;
@@ -70,19 +71,6 @@ const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight,
 #define COLOR_COUNT 4
 CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(0, 50, 50)};
 rgb_wave waves[COLOR_COUNT];
-
-// Storage must be able to hold color_count waves
-void init_waves(rgb_wave *storage, CRGB *colors, uint8_t color_count, uint8_t total_len) {
-  for (uint8_t i = 0; i < color_count; i++) {
-    uint8_t start = (i * total_len) / (color_count);
-    uint8_t end = ((i + 1) * total_len) / (color_count);
-    if (i != color_count - 1) {
-      storage[i] = {colors[i], colors[i + 1] , start, end, total_len};
-    } else {
-      storage[i] = {colors[i], colors[0], start, end, total_len};
-    }
-  }
-}
 
 void setup() {
   FastLED.addLeds<NEOPIXEL, DISPLAY0_PIN>(displays[0].leds, LEDS_PER_DISPLAY);
@@ -152,10 +140,8 @@ void loop() {
     show_rgb_wave(&waves[i], displays, 4);
   }
 
-  if (count++ > 100) {
-    get_time();
-    count = 0;
-  }
+
+  current_time_seconds += 60;
  
   display_time(displays, current_time_seconds);
   FastLED.show();
@@ -286,5 +272,18 @@ void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress) {
     color.g = sc.g + (((ec.g - sc.g) * current_distance) / 255);
     color.b = sc.b + (((ec.b - sc.b) * current_distance) / 255);
     set_column((start + i) % wave->len, display_list, color);
+  }
+}
+
+// Storage must be able to hold color_count waves
+void init_waves(rgb_wave *wave_storage, CRGB *colors, uint8_t color_count, uint8_t total_len) {
+  for (uint8_t i = 0; i < color_count; i++) {
+    uint8_t start = (i * total_len) / (color_count);
+    uint8_t end = ((i + 1) * total_len) / (color_count);
+    if (i != color_count - 1) {
+      wave_storage[i] = {colors[i], colors[i + 1] , start, end, total_len};
+    } else {
+      wave_storage[i] = {colors[i], colors[0], start, end, total_len};
+    }
   }
 }
