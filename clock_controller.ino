@@ -236,14 +236,14 @@ void show_rgb_wave(rgb_wave *wave, display_t *display_list) {
   uint8_t end = wave->end_col;
   CRGB sc = wave->start_color;
   CRGB ec = wave->end_color;
-  float total_distance = end - start;
+  uint16_t total_distance = end - start;
   for (int i = start; i < end; i++){
     // Calculate the current 
-    float current_distance = ((float) (start + i)) / total_distance; 
+    uint16_t current_distance = ((start + i) * 255) / total_distance; 
     CRGB color;
-    color.r = sc.r + (ec.r - sc.r) * current_distance;
-    color.g = sc.g + (ec.g - sc.g) * current_distance;
-    color.b = sc.b + (ec.b - sc.b) * current_distance;
+    color.r = (sc.r + (ec.r - sc.r) * current_distance) / 255;
+    color.g = (sc.g + (ec.g - sc.g) * current_distance) / 255;
+    color.b = (sc.b + (ec.b - sc.b) * current_distance) / 255;
     set_column(i, display_list, color);
   }
 }
