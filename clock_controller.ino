@@ -54,10 +54,10 @@ typedef struct {
   uint8_t len;
 } rgb_wave;
 
-void disable_incorrect_segments(display_t *display, char *number);
+void disable_incorrect_segments(display_t *display, const char *number);
 void set_column(uint8_t column, display_t *display_list, CRGB color);
-void set_segments(display_t *display, char *segments, CRGB color);
-void set_inverted_segments(display_t *display, char *segments, CRGB color);
+void set_segments(display_t *display, const char *segments, CRGB color);
+void set_inverted_segments(display_t *display, const char *segments, CRGB color);
 void clear_display(display_t *display);
 void display_time(display_t *display_list, uint32_t seconds);
 void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress);
@@ -110,7 +110,7 @@ void setup() {
   Serial.println(COLOR_COUNT);
 }
 
-void getTime() {
+void get_time() {
   uint8_t all_str[TIME_CHARS];
 
   radioSerial.print("AT+CIPSNTPTIME?\r\n");
@@ -141,8 +141,7 @@ void getTime() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  static int column_count = 0;
-  static int down = 0;
+  static int count = 1000;
   delay(10);
   
   for (int i = 0; i < DISPLAYS; i++) {
@@ -150,8 +149,15 @@ void loop() {
   }
 
   for (uint8_t i = 0; i < COLOR_COUNT; i++) {
-    show_rgb_wave(&waves[i], displays, 1);
+    show_rgb_wave(&waves[i], displays, 4);
   }
+
+  if (count++ > 100) {
+    get_time();
+    count = 0;
+  }
+ 
+  display_time(displays, current_time_seconds);
   FastLED.show();
 }
 
@@ -257,10 +263,8 @@ void set_column(uint8_t column, display_t *displays_list, CRGB color) {
 }
 
 void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress) {
-  if (progress) {
-    wave->start_col += 1;
-    wave->end_col += 1;
-  }
+  wave->start_col += progress;
+  wave->end_col += progress;
 
   if (wave->start_col > wave->end_col) {
     wave->start_col -= wave->len;
