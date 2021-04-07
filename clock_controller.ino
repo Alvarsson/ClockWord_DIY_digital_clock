@@ -38,7 +38,7 @@ const char *five = "abdeg";
 const char *six = "abdefg";
 const char *seven = "bcd";
 const char *eight = all;
-const char *nine = "abcdg";
+const char *nine = "abcdeg";
 
 SoftwareSerial radioSerial = SoftwareSerial(SW_RX, SW_TX);
 
@@ -69,7 +69,7 @@ uint32_t current_time_seconds = 49020 - 60;
 const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
 
 #define COLOR_COUNT 4
-CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(0, 50, 0)};
+CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(50, 0, 50)};
 rgb_wave waves[COLOR_COUNT];
 
 void setup() {
@@ -145,17 +145,17 @@ void loop() {
     clear_display(&displays[i]);
   }
 
-  if (current_time_seconds >= 49020 && current_time_seconds <= 49020 + 60) {
+//  if (current_time_seconds >= 49020 && current_time_seconds <= 49020 + 60) {
     for (uint8_t i = 0; i < COLOR_COUNT; i++) {
       show_rgb_wave(&waves[i], displays, 3);
     }
-  } else {
-    for (uint8_t i = 0; i < DISPLAYS; i++){
-      set_segments(&displays[i], all, CRGB(50, 50, 0));
-    }
-  }
+//  } else {
+//    for (uint8_t i = 0; i < DISPLAYS; i++){
+//      set_segments(&displays[i], all, CRGB(50, 50, 0));
+//    }
+//  }
   
-  display_time(displays, current_time_seconds);
+   display_time(displays, current_time_seconds);
   FastLED.show();
 }
 
