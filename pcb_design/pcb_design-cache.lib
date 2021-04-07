@@ -192,11 +192,11 @@ X VI 3 -300 0 100 R 50 50 1 1 W
 ENDDRAW
 ENDDEF
 #
-# pcb_design-rescue_ATmega2560-16AU-Atmega
+# pcb_design-rescue_ATmega2560-16AU-Atmega-pcb_design-rescue
 #
-DEF pcb_design-rescue_ATmega2560-16AU-Atmega U 0 20 Y Y 1 F N
+DEF pcb_design-rescue_ATmega2560-16AU-Atmega-pcb_design-rescue U 0 20 Y Y 1 F N
 F0 "U" 0 50 50 H V C BNN
-F1 "pcb_design-rescue_ATmega2560-16AU-Atmega" 0 -50 50 H V C TNN
+F1 "pcb_design-rescue_ATmega2560-16AU-Atmega-pcb_design-rescue" 0 -50 50 H V C TNN
 F2 "Package_QFP:TQFP-100_14x14mm_P0.5mm" 0 0 50 H I C CIN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
