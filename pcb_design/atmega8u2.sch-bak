@@ -16,7 +16,7 @@ $EndDescr
 Wire Wire Line
 	3750 2300 3900 2300
 $Comp
-L power:GND #PWR?
+L pcb_design-rescue:GND-power #PWR?
 U 1 1 6072964F
 P 3750 2300
 AR Path="/6072964F" Ref="#PWR?"  Part="1" 
@@ -29,7 +29,7 @@ F 3 "" H 3750 2300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C_Small C?
+L pcb_design-rescue:C_Small-Device C?
 U 1 1 60729655
 P 4000 2450
 AR Path="/60729655" Ref="C?"  Part="1" 
@@ -42,7 +42,7 @@ F 3 "~" H 4000 2450 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:C_Small C?
+L pcb_design-rescue:C_Small-Device C?
 U 1 1 6072965B
 P 4000 2150
 AR Path="/6072965B" Ref="C?"  Part="1" 
@@ -59,7 +59,7 @@ Wire Wire Line
 Wire Wire Line
 	3550 2600 3550 2450
 $Comp
-L Device:R R?
+L pcb_design-rescue:R-Device R?
 U 1 1 60729663
 P 3550 2300
 AR Path="/60729663" Ref="R?"  Part="1" 
@@ -77,7 +77,7 @@ Connection ~ 3900 2300
 Wire Wire Line
 	3900 2150 3900 2300
 $Comp
-L MCU_Microchip_ATmega:ATmega8U2-AU U?
+L pcb_design-rescue:ATmega8U2-AU-MCU_Microchip_ATmega U?
 U 1 1 6072966C
 P 5600 3100
 AR Path="/6072966C" Ref="U?"  Part="1" 
@@ -90,7 +90,7 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/doc7799.pdf" H 5600 3100 50
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:Crystal Clk?
+L pcb_design-rescue:Crystal-Device Clk?
 U 1 1 60729672
 P 4250 2300
 AR Path="/60729672" Ref="Clk?"  Part="1" 
@@ -117,7 +117,7 @@ Wire Wire Line
 Wire Wire Line
 	4250 2000 3550 2000
 $Comp
-L Device:R R?
+L pcb_design-rescue:R-Device R?
 U 1 1 60729681
 P 4600 2450
 AR Path="/60729681" Ref="R?"  Part="1" 
@@ -137,7 +137,7 @@ Wire Wire Line
 	5700 1600 5700 1700
 Connection ~ 5600 1600
 $Comp
-L power:GND #PWR?
+L pcb_design-rescue:GND-power #PWR?
 U 1 1 6072968C
 P 5600 4500
 AR Path="/6072968C" Ref="#PWR?"  Part="1" 
@@ -152,7 +152,7 @@ $EndComp
 Wire Wire Line
 	5600 1600 5700 1600
 $Comp
-L power:+5V #PWR?
+L pcb_design-rescue:+5V-power #PWR?
 U 1 1 60729693
 P 5600 1600
 AR Path="/60729693" Ref="#PWR?"  Part="1" 
@@ -177,7 +177,7 @@ PRGM_RX
 Text HLabel 6950 3700 2    50   Input ~ 0
 PRGM_TX
 $Comp
-L Device:R R?
+L pcb_design-rescue:R-Device R?
 U 1 1 6070CBFF
 P 6700 3600
 F 0 "R?" V 6493 3600 50  0000 C CNN
@@ -188,7 +188,7 @@ F 3 "~" H 6700 3600 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R R?
+L pcb_design-rescue:R-Device R?
 U 1 1 6070D21B
 P 6700 3900
 F 0 "R?" V 6493 3900 50  0000 C CNN
@@ -218,4 +218,8 @@ Wire Wire Line
 	6900 3600 6900 3700
 Wire Wire Line
 	6900 3700 6950 3700
+Wire Wire Line
+	6300 4200 6500 4200
+Text HLabel 6500 4200 2    50   Input ~ 0
+PRGM_RST
 $EndSCHEMATC

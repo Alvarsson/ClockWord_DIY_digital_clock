@@ -14,99 +14,99 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Device:Crystal Clk1
+L pcb_design-rescue:Crystal-Device Clk1
 U 1 1 606E986E
-P 2000 1400
-F 0 "Clk1" V 1954 1531 50  0000 L CNN
-F 1 "16Mhz" V 2045 1531 50  0000 L CNN
-F 2 "Crystal:Crystal_HC52-8mm_Vertical" H 2000 1400 50  0001 C CNN
-F 3 "~" H 2000 1400 50  0001 C CNN
-	1    2000 1400
+P 1600 2000
+F 0 "Clk1" V 1554 2131 50  0000 L CNN
+F 1 "16Mhz" V 1645 2131 50  0000 L CNN
+F 2 "Crystal:Crystal_HC52-8mm_Vertical" H 1600 2000 50  0001 C CNN
+F 3 "~" H 1600 2000 50  0001 C CNN
+	1    1600 2000
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	2000 1250 2600 1250
+	1600 1850 2200 1850
 Wire Wire Line
-	2600 1300 2600 1250
+	2200 1900 2200 1850
 Wire Wire Line
-	2600 1500 2600 1550
+	2200 2100 2200 2150
 Wire Wire Line
-	2000 1250 1850 1250
-Connection ~ 2000 1250
+	1600 1850 1450 1850
+Connection ~ 1600 1850
 Wire Wire Line
-	2000 1550 1850 1550
-Connection ~ 2000 1550
+	1600 2150 1450 2150
+Connection ~ 1600 2150
 Wire Wire Line
-	1650 1250 1650 1400
-Connection ~ 1650 1400
+	1250 1850 1250 2000
+Connection ~ 1250 2000
 Wire Wire Line
-	1650 1400 1650 1550
+	1250 2000 1250 2150
 $Comp
-L Device:R R1
+L pcb_design-rescue:R-Device R1
 U 1 1 60717ACE
-P 1300 1400
-F 0 "R1" H 1350 1350 50  0000 L CNN
-F 1 "1M" V 1300 1350 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 1230 1400 50  0001 C CNN
-F 3 "~" H 1300 1400 50  0001 C CNN
-	1    1300 1400
+P 900 2000
+F 0 "R1" H 950 1950 50  0000 L CNN
+F 1 "1M" V 900 1950 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 830 2000 50  0001 C CNN
+F 3 "~" H 900 2000 50  0001 C CNN
+	1    900  2000
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2000 1550 2000 1700
+	1600 2150 1600 2300
 Wire Wire Line
-	2000 1700 1300 1700
+	1600 2300 900  2300
 Wire Wire Line
-	1300 1700 1300 1550
+	900  2300 900  2150
 Wire Wire Line
-	2000 1250 2000 1100
+	1600 1850 1600 1700
 Wire Wire Line
-	2000 1100 1300 1100
+	1600 1700 900  1700
 Wire Wire Line
-	1300 1100 1300 1250
+	900  1700 900  1850
 $Comp
-L Device:R R2
+L pcb_design-rescue:R-Device R2
 U 1 1 6072866C
-P 2350 1550
-F 0 "R2" V 2450 1450 50  0000 C CNN
-F 1 "27" V 2450 1550 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 2280 1550 50  0001 C CNN
-F 3 "~" H 2350 1550 50  0001 C CNN
-	1    2350 1550
+P 1950 2150
+F 0 "R2" V 2050 2050 50  0000 C CNN
+F 1 "27" V 2050 2150 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 1880 2150 50  0001 C CNN
+F 3 "~" H 1950 2150 50  0001 C CNN
+	1    1950 2150
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	2000 1550 2200 1550
+	1600 2150 1800 2150
 Wire Wire Line
-	2500 1550 2600 1550
+	2100 2150 2200 2150
 Wire Wire Line
-	2600 1100 2350 1100
-Text Label 2350 1100 0    50   ~ 0
+	2200 1700 1950 1700
+Text Label 1950 1700 0    50   ~ 0
 RST
 $Comp
-L Device:C_Small C1
+L pcb_design-rescue:C_Small-Device C1
 U 1 1 6071040A
-P 1750 1250
-F 0 "C1" V 1550 1250 50  0000 C CNN
-F 1 "22pF" V 1650 1250 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0201_0603Metric" H 1750 1250 50  0001 C CNN
-F 3 "~" H 1750 1250 50  0001 C CNN
-	1    1750 1250
+P 1350 1850
+F 0 "C1" V 1150 1850 50  0000 C CNN
+F 1 "22pF" V 1250 1850 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0201_0603Metric" H 1350 1850 50  0001 C CNN
+F 3 "~" H 1350 1850 50  0001 C CNN
+	1    1350 1850
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:C_Small C2
+L pcb_design-rescue:C_Small-Device C2
 U 1 1 60710D71
-P 1750 1550
-F 0 "C2" V 1950 1550 50  0000 C CNN
-F 1 "22pF" V 1850 1550 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0201_0603Metric" H 1750 1550 50  0001 C CNN
-F 3 "~" H 1750 1550 50  0001 C CNN
-	1    1750 1550
+P 1350 2150
+F 0 "C2" V 1550 2150 50  0000 C CNN
+F 1 "22pF" V 1450 2150 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0201_0603Metric" H 1350 2150 50  0001 C CNN
+F 3 "~" H 1350 2150 50  0001 C CNN
+	1    1350 2150
 	0    1    1    0   
 $EndComp
 $Comp
-L Connector_Generic:Conn_01x02 J1
+L pcb_design-rescue:Conn_01x02-Connector_Generic J1
 U 1 1 606DA8B0
 P 5700 1100
 F 0 "J1" H 5780 1092 50  0000 L CNN
@@ -121,7 +121,7 @@ Wire Wire Line
 Wire Wire Line
 	5500 1200 5400 1200
 $Comp
-L Regulator_Linear:LD1117S33TR_SOT223 U2
+L pcb_design-rescue:LD1117S33TR_SOT223-Regulator_Linear U2
 U 1 1 606F0FA3
 P 5550 1750
 F 0 "U2" H 5550 1992 50  0000 C CNN
@@ -136,9 +136,9 @@ Wire Wire Line
 Wire Wire Line
 	5850 1750 6000 1750
 Wire Wire Line
-	5250 1750 5050 1750
+	4850 2350 4650 2350
 $Comp
-L Connector_Generic:Conn_02x04_Top_Bottom J2
+L pcb_design-rescue:Conn_02x04_Top_Bottom-Connector_Generic J2
 U 1 1 60700AF7
 P 5750 3400
 F 0 "J2" H 5800 3717 50  0000 C CNN
@@ -170,7 +170,7 @@ Text Label 6200 3600 0    50   ~ 0
 ESP_TX
 Text Notes 6400 3300 0    50   ~ 0
 (ESP VCC)
-Text Notes 4650 3500 0    50   ~ 0
+Text Notes 4250 4100 0    50   ~ 0
 (ESP IO2)
 Text Label 6200 3400 0    50   ~ 0
 ESP_RST
@@ -191,7 +191,7 @@ Wire Wire Line
 Text Label 5500 4000 2    50   ~ 0
 ESP_EN
 $Comp
-L Device:R R3
+L pcb_design-rescue:R-Device R3
 U 1 1 60719578
 P 5400 4600
 F 0 "R3" V 5193 4600 50  0000 C CNN
@@ -202,7 +202,7 @@ F 3 "~" H 5400 4600 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R R4
+L pcb_design-rescue:R-Device R4
 U 1 1 60719C63
 P 5900 4600
 F 0 "R4" V 5693 4600 50  0000 C CNN
@@ -216,7 +216,7 @@ Wire Wire Line
 	5100 4600 5250 4600
 Wire Wire Line
 	6050 4600 6200 4600
-Text Label 5100 4600 2    50   ~ 0
+Text Label 4700 5200 2    50   ~ 0
 TX2
 Text Label 5650 4800 2    50   ~ 0
 ESP_RX
@@ -230,21 +230,21 @@ Wire Wire Line
 $Comp
 L pcb_design-rescue:ATmega2560-16AU-Atmega-pcb_design-rescue U1
 U 1 1 606E4022
-P 3400 3700
-F 0 "U1" H 3400 711 50  0000 C CNN
-F 1 "ATmega2560-16AU" H 3400 620 50  0000 C CNN
-F 2 "Package_QFP:TQFP-100_14x14mm_P0.5mm" H 3400 3700 50  0001 C CIN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2549-8-bit-AVR-Microcontroller-ATmega640-1280-1281-2560-2561_datasheet.pdf" H 3400 3700 50  0001 C CNN
-	1    3400 3700
+P 3000 4300
+F 0 "U1" H 3000 1311 50  0000 C CNN
+F 1 "ATmega2560-16AU" H 3000 1220 50  0000 C CNN
+F 2 "Package_QFP:TQFP-100_14x14mm_P0.5mm" H 3000 4300 50  0001 C CIN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2549-8-bit-AVR-Microcontroller-ATmega640-1280-1281-2560-2561_datasheet.pdf" H 3000 4300 50  0001 C CNN
+	1    3000 4300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2600 4700 2400 4700
+	2200 5300 2000 5300
 Wire Wire Line
-	2600 4800 2400 4800
-Text Label 2400 4700 2    50   ~ 0
+	2200 5400 2000 5400
+Text Label 2000 5300 2    50   ~ 0
 RX2
-Text Label 2400 4800 2    50   ~ 0
+Text Label 2000 5400 2    50   ~ 0
 TX2
 Wire Wire Line
 	5500 4100 5750 4100
@@ -255,7 +255,7 @@ RX2
 Text Notes 5800 4850 0    50   ~ 0
 Step down voltage going to ESP8266 from 5V to 3.3V \nTechnically works without, but probably better for longevity
 $Comp
-L power:+5V #PWR0101
+L pcb_design-rescue:+5V-power #PWR0101
 U 1 1 6071B869
 P 5400 1100
 F 0 "#PWR0101" H 5400 950 50  0001 C CNN
@@ -266,7 +266,7 @@ F 3 "" H 5400 1100 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:GND #PWR0102
+L pcb_design-rescue:GND-power #PWR0102
 U 1 1 6071E840
 P 5400 1200
 F 0 "#PWR0102" H 5400 950 50  0001 C CNN
@@ -277,7 +277,7 @@ F 3 "" H 5400 1200 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:GND #PWR0103
+L pcb_design-rescue:GND-power #PWR0103
 U 1 1 6072142C
 P 5550 2250
 F 0 "#PWR0103" H 5550 2000 50  0001 C CNN
@@ -288,7 +288,7 @@ F 3 "" H 5550 2250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:+3.3V #PWR0105
+L pcb_design-rescue:+3.3V-power #PWR0105
 U 1 1 60732717
 P 6000 1750
 F 0 "#PWR0105" H 6000 1600 50  0001 C CNN
@@ -299,18 +299,18 @@ F 3 "" H 6000 1750 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:+5V #PWR0106
+L pcb_design-rescue:+5V-power #PWR0106
 U 1 1 607339F0
-P 5050 1750
-F 0 "#PWR0106" H 5050 1600 50  0001 C CNN
-F 1 "+5V" V 5065 1878 50  0000 L CNN
-F 2 "" H 5050 1750 50  0001 C CNN
-F 3 "" H 5050 1750 50  0001 C CNN
-	1    5050 1750
+P 4650 2350
+F 0 "#PWR0106" H 4650 2200 50  0001 C CNN
+F 1 "+5V" V 4665 2478 50  0000 L CNN
+F 2 "" H 4650 2350 50  0001 C CNN
+F 3 "" H 4650 2350 50  0001 C CNN
+	1    4650 2350
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:+3.3V #PWR0107
+L pcb_design-rescue:+3.3V-power #PWR0107
 U 1 1 60736BC4
 P 5750 3800
 F 0 "#PWR0107" H 5750 3650 50  0001 C CNN
@@ -321,7 +321,7 @@ F 3 "" H 5750 3800 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:+3.3V #PWR0108
+L pcb_design-rescue:+3.3V-power #PWR0108
 U 1 1 60737357
 P 5750 3900
 F 0 "#PWR0108" H 5750 3750 50  0001 C CNN
@@ -332,7 +332,7 @@ F 3 "" H 5750 3900 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:+3.3V #PWR0109
+L pcb_design-rescue:+3.3V-power #PWR0109
 U 1 1 60737C45
 P 5750 4000
 F 0 "#PWR0109" H 5750 3850 50  0001 C CNN
@@ -343,7 +343,7 @@ F 3 "" H 5750 4000 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:GND #PWR0110
+L pcb_design-rescue:GND-power #PWR0110
 U 1 1 607393F6
 P 6200 4600
 F 0 "#PWR0110" H 6200 4350 50  0001 C CNN
@@ -354,18 +354,18 @@ F 3 "" H 6200 4600 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:GND #PWR0111
+L pcb_design-rescue:GND-power #PWR0111
 U 1 1 6074E330
-P 3400 6600
-F 0 "#PWR0111" H 3400 6350 50  0001 C CNN
-F 1 "GND" V 3405 6472 50  0000 R CNN
-F 2 "" H 3400 6600 50  0001 C CNN
-F 3 "" H 3400 6600 50  0001 C CNN
-	1    3400 6600
+P 3000 7200
+F 0 "#PWR0111" H 3000 6950 50  0001 C CNN
+F 1 "GND" V 3005 7072 50  0000 R CNN
+F 2 "" H 3000 7200 50  0001 C CNN
+F 3 "" H 3000 7200 50  0001 C CNN
+	1    3000 7200
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:+3.3V #PWR0112
+L pcb_design-rescue:+3.3V-power #PWR0112
 U 1 1 6075286B
 P 5400 3500
 F 0 "#PWR0112" H 5400 3350 50  0001 C CNN
@@ -376,7 +376,7 @@ F 3 "" H 5400 3500 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:+3.3V #PWR0113
+L pcb_design-rescue:+3.3V-power #PWR0113
 U 1 1 60758694
 P 6200 3300
 F 0 "#PWR0113" H 6200 3150 50  0001 C CNN
@@ -387,7 +387,7 @@ F 3 "" H 6200 3300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR0114
+L pcb_design-rescue:GND-power #PWR0114
 U 1 1 6075C443
 P 5400 3600
 F 0 "#PWR0114" H 5400 3350 50  0001 C CNN
@@ -398,99 +398,99 @@ F 3 "" H 5400 3600 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:GND #PWR0117
+L pcb_design-rescue:GND-power #PWR0117
 U 1 1 60775CB5
-P 1500 1400
-F 0 "#PWR0117" H 1500 1150 50  0001 C CNN
-F 1 "GND" H 1505 1227 50  0000 C CNN
-F 2 "" H 1500 1400 50  0001 C CNN
-F 3 "" H 1500 1400 50  0001 C CNN
-	1    1500 1400
+P 1100 2000
+F 0 "#PWR0117" H 1100 1750 50  0001 C CNN
+F 1 "GND" H 1105 1827 50  0000 C CNN
+F 2 "" H 1100 2000 50  0001 C CNN
+F 3 "" H 1100 2000 50  0001 C CNN
+	1    1100 2000
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1500 1400 1650 1400
+	1100 2000 1250 2000
 Wire Wire Line
-	3400 800  3400 500 
+	3000 1400 3000 1100
 Wire Wire Line
-	3400 500  3500 500 
+	3000 1100 3100 1100
 Wire Wire Line
-	3500 500  3500 800 
+	3100 1100 3100 1400
 Wire Wire Line
-	3500 500  3700 500 
-Connection ~ 3500 500 
+	3100 1100 3300 1100
+Connection ~ 3100 1100
 $Comp
-L Device:C C3
+L pcb_design-rescue:C-Device C3
 U 1 1 60784AD5
-P 3700 650
-F 0 "C3" H 3815 696 50  0000 L CNN
-F 1 "100nF" H 3815 605 50  0000 L CNN
-F 2 "" H 3738 500 50  0001 C CNN
-F 3 "~" H 3700 650 50  0001 C CNN
-	1    3700 650 
+P 3300 1250
+F 0 "C3" H 3415 1296 50  0000 L CNN
+F 1 "100nF" H 3415 1205 50  0000 L CNN
+F 2 "" H 3338 1100 50  0001 C CNN
+F 3 "~" H 3300 1250 50  0001 C CNN
+	1    3300 1250
 	1    0    0    -1  
 $EndComp
-Connection ~ 3700 500 
+Connection ~ 3300 1100
 $Comp
-L Device:C C4
+L pcb_design-rescue:C-Device C4
 U 1 1 607854A5
-P 4150 650
-F 0 "C4" H 4265 696 50  0000 L CNN
-F 1 "100nF" H 4265 605 50  0000 L CNN
-F 2 "" H 4188 500 50  0001 C CNN
-F 3 "~" H 4150 650 50  0001 C CNN
-	1    4150 650 
+P 3750 1250
+F 0 "C4" H 3865 1296 50  0000 L CNN
+F 1 "100nF" H 3865 1205 50  0000 L CNN
+F 2 "" H 3788 1100 50  0001 C CNN
+F 3 "~" H 3750 1250 50  0001 C CNN
+	1    3750 1250
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C5
+L pcb_design-rescue:C-Device C5
 U 1 1 60785959
-P 4600 650
-F 0 "C5" H 4715 696 50  0000 L CNN
-F 1 "100nF" H 4715 605 50  0000 L CNN
-F 2 "" H 4638 500 50  0001 C CNN
-F 3 "~" H 4600 650 50  0001 C CNN
-	1    4600 650 
+P 4200 1250
+F 0 "C5" H 4315 1296 50  0000 L CNN
+F 1 "100nF" H 4315 1205 50  0000 L CNN
+F 2 "" H 4238 1100 50  0001 C CNN
+F 3 "~" H 4200 1250 50  0001 C CNN
+	1    4200 1250
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4600 500  4750 500 
-Connection ~ 4600 500 
+	4200 1100 4350 1100
+Connection ~ 4200 1100
 $Comp
-L power:+5V #PWR0118
+L pcb_design-rescue:+5V-power #PWR0118
 U 1 1 60788B7F
-P 4750 500
-F 0 "#PWR0118" H 4750 350 50  0001 C CNN
-F 1 "+5V" V 4765 628 50  0000 L CNN
-F 2 "" H 4750 500 50  0001 C CNN
-F 3 "" H 4750 500 50  0001 C CNN
-	1    4750 500 
+P 4350 1100
+F 0 "#PWR0118" H 4350 950 50  0001 C CNN
+F 1 "+5V" V 4365 1228 50  0000 L CNN
+F 2 "" H 4350 1100 50  0001 C CNN
+F 3 "" H 4350 1100 50  0001 C CNN
+	1    4350 1100
 	0    1    1    0   
 $EndComp
-Connection ~ 4600 800 
+Connection ~ 4200 1400
 Wire Wire Line
-	4600 800  4750 800 
+	4200 1400 4350 1400
 $Comp
-L power:GND #PWR0119
+L pcb_design-rescue:GND-power #PWR0119
 U 1 1 6078AD05
-P 4750 800
-F 0 "#PWR0119" H 4750 550 50  0001 C CNN
-F 1 "GND" V 4755 672 50  0000 R CNN
-F 2 "" H 4750 800 50  0001 C CNN
-F 3 "" H 4750 800 50  0001 C CNN
-	1    4750 800 
+P 4350 1400
+F 0 "#PWR0119" H 4350 1150 50  0001 C CNN
+F 1 "GND" V 4355 1272 50  0000 R CNN
+F 2 "" H 4350 1400 50  0001 C CNN
+F 3 "" H 4350 1400 50  0001 C CNN
+	1    4350 1400
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	3700 500  4150 500 
-Connection ~ 4150 500 
+	3300 1100 3750 1100
+Connection ~ 3750 1100
 Wire Wire Line
-	4150 500  4600 500 
+	3750 1100 4200 1100
 Wire Wire Line
-	3700 800  4150 800 
-Connection ~ 4150 800 
+	3300 1400 3750 1400
+Connection ~ 3750 1400
 Wire Wire Line
-	4150 800  4600 800 
+	3750 1400 4200 1400
 $Sheet
 S 8900 4650 1200 1300
 U 606EB0A7
@@ -498,11 +498,12 @@ F0 "atmega8u2" 50
 F1 "atmega8u2.sch" 50
 F2 "PRGM_RX" I L 8900 5700 50 
 F3 "PRGM_TX" I L 8900 5800 50 
+F4 "PRGM_RST" I L 8900 5600 50 
 $EndSheet
 Wire Wire Line
-	4200 4700 4350 4700
+	3800 5300 3950 5300
 Wire Wire Line
-	4200 4800 4350 4800
+	3800 5400 3950 5400
 Wire Wire Line
 	8900 5700 8750 5700
 Wire Wire Line
@@ -511,12 +512,12 @@ Text Label 8750 5700 2    50   ~ 0
 PRGM_RX
 Text Label 8750 5800 2    50   ~ 0
 PRGM_TX
-Text Label 4350 4700 0    50   ~ 0
+Text Label 3950 5300 0    50   ~ 0
 PRGM_RX
-Text Label 4350 4800 0    50   ~ 0
+Text Label 3950 5400 0    50   ~ 0
 PRGM_TX
 $Comp
-L Connector_Generic:Conn_02x03_Counter_Clockwise J?
+L pcb_design-rescue:Conn_02x03_Counter_Clockwise-Connector_Generic J?
 U 1 1 6071B139
 P 7500 1150
 F 0 "J?" H 7550 1467 50  0000 C CNN
@@ -526,18 +527,18 @@ F 3 "~" H 7500 1150 50  0001 C CNN
 	1    7500 1150
 	1    0    0    -1  
 $EndComp
-Text Label 4350 2300 0    50   ~ 0
+Text Label 3950 2900 0    50   ~ 0
 MISO
-Text Label 4350 2100 0    50   ~ 0
+Text Label 3950 2700 0    50   ~ 0
 SCK
-Text Label 4350 2200 0    50   ~ 0
+Text Label 3950 2800 0    50   ~ 0
 MOSI
 Wire Wire Line
-	4350 2100 4200 2100
+	3950 2700 3800 2700
 Wire Wire Line
-	4200 2200 4350 2200
+	3800 2800 3950 2800
 Wire Wire Line
-	4350 2300 4200 2300
+	3950 2900 3800 2900
 Text Label 7150 1050 2    50   ~ 0
 MISO
 Text Label 7150 1150 2    50   ~ 0
@@ -547,7 +548,7 @@ RST
 Text Label 7950 1150 0    50   ~ 0
 MOSI
 $Comp
-L power:GND #PWR?
+L pcb_design-rescue:GND-power #PWR?
 U 1 1 6072BCF1
 P 7950 1250
 F 0 "#PWR?" H 7950 1000 50  0001 C CNN
@@ -558,7 +559,7 @@ F 3 "" H 7950 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:+5V #PWR?
+L pcb_design-rescue:+5V-power #PWR?
 U 1 1 6072C21C
 P 7950 1050
 F 0 "#PWR?" H 7950 900 50  0001 C CNN
@@ -580,4 +581,8 @@ Wire Wire Line
 	7150 1150 7300 1150
 Wire Wire Line
 	7300 1250 7150 1250
+Wire Wire Line
+	8900 5600 8750 5600
+Text Label 8750 5600 2    50   ~ 0
+RST
 $EndSCHEMATC
