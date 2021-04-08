@@ -172,4 +172,54 @@ Wire Wire Line
 	4900 2450 4900 2400
 Wire Wire Line
 	4750 2450 4900 2450
+Text HLabel 6950 3800 2    50   Input ~ 0
+PRGM_RX
+Text HLabel 6950 3700 2    50   Input ~ 0
+PRGM_TX
+$Comp
+L Device:R R?
+U 1 1 6070CBFF
+P 6700 3600
+F 0 "R?" V 6493 3600 50  0000 C CNN
+F 1 "1k" V 6584 3600 50  0000 C CNN
+F 2 "" V 6630 3600 50  0001 C CNN
+F 3 "~" H 6700 3600 50  0001 C CNN
+	1    6700 3600
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6070D21B
+P 6700 3900
+F 0 "R?" V 6493 3900 50  0000 C CNN
+F 1 "1k" V 6584 3900 50  0000 C CNN
+F 2 "" V 6630 3900 50  0001 C CNN
+F 3 "~" H 6700 3900 50  0001 C CNN
+	1    6700 3900
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6300 3700 6550 3700
+Wire Wire Line
+	6550 3600 6550 3700
+Wire Wire Line
+	6300 3800 6550 3800
+Wire Wire Line
+	6550 3800 6550 3900
+Wire Wire Line
+	6850 3900 6900 3900
+Wire Wire Line
+	6900 3900 6900 3800
+Wire Wire Line
+	6900 3800 6950 3800
+Wire Wire Line
+	6850 3600 6900 3600
+Wire Wire Line
+	6900 3600 6900 3700
+Wire Wire Line
+	6900 3700 6950 3700
+Wire Wire Line
+	6300 4200 6500 4200
+Text HLabel 6500 4200 2    50   Input ~ 0
+PRGM_RST
 $EndSCHEMATC

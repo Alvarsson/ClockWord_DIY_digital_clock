@@ -496,5 +496,88 @@ S 8900 4650 1200 1300
 U 606EB0A7
 F0 "atmega8u2" 50
 F1 "atmega8u2.sch" 50
+F2 "PRGM_RX" I L 8900 5700 50 
+F3 "PRGM_TX" I L 8900 5800 50 
 $EndSheet
+Wire Wire Line
+	4200 4700 4350 4700
+Wire Wire Line
+	4200 4800 4350 4800
+Wire Wire Line
+	8900 5700 8750 5700
+Wire Wire Line
+	8900 5800 8750 5800
+Text Label 8750 5700 2    50   ~ 0
+PRGM_RX
+Text Label 8750 5800 2    50   ~ 0
+PRGM_TX
+Text Label 4350 4700 0    50   ~ 0
+PRGM_RX
+Text Label 4350 4800 0    50   ~ 0
+PRGM_TX
+$Comp
+L Connector_Generic:Conn_02x03_Counter_Clockwise J?
+U 1 1 6071B139
+P 7500 1150
+F 0 "J?" H 7550 1467 50  0000 C CNN
+F 1 "ISP" H 7550 1376 50  0000 C CNN
+F 2 "" H 7500 1150 50  0001 C CNN
+F 3 "~" H 7500 1150 50  0001 C CNN
+	1    7500 1150
+	1    0    0    -1  
+$EndComp
+Text Label 4350 2300 0    50   ~ 0
+MISO
+Text Label 4350 2100 0    50   ~ 0
+SCK
+Text Label 4350 2200 0    50   ~ 0
+MOSI
+Wire Wire Line
+	4350 2100 4200 2100
+Wire Wire Line
+	4200 2200 4350 2200
+Wire Wire Line
+	4350 2300 4200 2300
+Text Label 7150 1050 2    50   ~ 0
+MISO
+Text Label 7150 1150 2    50   ~ 0
+SCK
+Text Label 7150 1250 2    50   ~ 0
+RST
+Text Label 7950 1150 0    50   ~ 0
+MOSI
+$Comp
+L power:GND #PWR?
+U 1 1 6072BCF1
+P 7950 1250
+F 0 "#PWR?" H 7950 1000 50  0001 C CNN
+F 1 "GND" H 7955 1077 50  0000 C CNN
+F 2 "" H 7950 1250 50  0001 C CNN
+F 3 "" H 7950 1250 50  0001 C CNN
+	1    7950 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR?
+U 1 1 6072C21C
+P 7950 1050
+F 0 "#PWR?" H 7950 900 50  0001 C CNN
+F 1 "+5V" H 7965 1223 50  0000 C CNN
+F 2 "" H 7950 1050 50  0001 C CNN
+F 3 "" H 7950 1050 50  0001 C CNN
+	1    7950 1050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7800 1250 7950 1250
+Wire Wire Line
+	7950 1150 7800 1150
+Wire Wire Line
+	7950 1050 7800 1050
+Wire Wire Line
+	7150 1050 7300 1050
+Wire Wire Line
+	7150 1150 7300 1150
+Wire Wire Line
+	7300 1250 7150 1250
 $EndSCHEMATC
