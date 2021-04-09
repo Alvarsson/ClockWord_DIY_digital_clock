@@ -177,10 +177,10 @@ PRGM_RX
 Text HLabel 6950 3700 2    50   Input ~ 0
 PRGM_TX
 $Comp
-L pcb_design-rescue:R-Device R?
+L pcb_design-rescue:R-Device R10
 U 1 1 6070CBFF
 P 6700 3600
-F 0 "R?" V 6493 3600 50  0000 C CNN
+F 0 "R10" V 6493 3600 50  0000 C CNN
 F 1 "1k" V 6584 3600 50  0000 C CNN
 F 2 "" V 6630 3600 50  0001 C CNN
 F 3 "~" H 6700 3600 50  0001 C CNN
@@ -188,10 +188,10 @@ F 3 "~" H 6700 3600 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L pcb_design-rescue:R-Device R?
+L pcb_design-rescue:R-Device R11
 U 1 1 6070D21B
 P 6700 3900
-F 0 "R?" V 6493 3900 50  0000 C CNN
+F 0 "R11" V 6493 3900 50  0000 C CNN
 F 1 "1k" V 6584 3900 50  0000 C CNN
 F 2 "" V 6630 3900 50  0001 C CNN
 F 3 "~" H 6700 3900 50  0001 C CNN
