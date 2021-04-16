@@ -1,5 +1,5 @@
-#include "led_clock.h"
 #include "animations.h"
+#include "led_clock.h"
 #include <SoftwareSerial.h>
 
 #define SW_RX 6
