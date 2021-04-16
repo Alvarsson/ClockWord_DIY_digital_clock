@@ -49,8 +49,8 @@ typedef struct {
 typedef struct {
   CRGB start_color;
   CRGB end_color;
-  uint8_t start_col;
-  uint8_t end_col;
+  uint8_t start_pos;
+  uint8_t end_pos;
   uint8_t len;
 } rgb_wave;
 
@@ -62,6 +62,9 @@ void clear_display(display_t *display);
 void display_time(display_t *display_list, uint32_t seconds);
 void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress);
 void init_waves(rgb_wave *wave_storage, CRGB *colors, uint8_t color_count, uint8_t total_len);
+void set_circle_index(uint8_t index, display_t *displays, CRGB color);
+CRGB calculate_offset_color(CRGB start_color, CRGB end_color, uint16_t total, uint16_t offset);
+void show_rgb_circle(rgb_wave *wave, display_t *display_list, uint8_t progress);
 
 display_t displays[DISPLAYS];
 uint32_t current_time_seconds = 49020 - 60;
@@ -94,8 +97,7 @@ void setup() {
 
   while (radioSerial.available()) radioSerial.read();
 
-  init_waves(waves, wave_colors, COLOR_COUNT, ANIMATION_COLUMNS * 2);
-  Serial.println(COLOR_COUNT);
+  init_waves(waves, wave_colors, COLOR_COUNT, LEDS_PER_SEGMENT * 12);
 }
 
 void get_time() {
@@ -140,22 +142,12 @@ void loop() {
     current_time_seconds += 1;
     count = 0;
   }
- 
-  for (int i = 0; i < DISPLAYS; i++) {
-    clear_display(&displays[i]);
+
+  for (int i = 0; i < COLOR_COUNT; i++){
+    rgb_wave *wave = waves + i;
+    show_rgb_circle(wave, displays, 1);
   }
 
-//  if (current_time_seconds >= 49020 && current_time_seconds <= 49020 + 60) {
-    for (uint8_t i = 0; i < COLOR_COUNT; i++) {
-      show_rgb_wave(&waves[i], displays, 3);
-    }
-//  } else {
-//    for (uint8_t i = 0; i < DISPLAYS; i++){
-//      set_segments(&displays[i], all, CRGB(50, 50, 0));
-//    }
-//  }
-  
-   display_time(displays, current_time_seconds);
   FastLED.show();
 }
 
@@ -260,17 +252,47 @@ void set_column(uint8_t column, display_t *displays_list, CRGB color) {
   }
 }
 
-void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress) {
-  wave->start_col += progress;
-  wave->end_col += progress;
+CRGB calculate_offset_color(CRGB start_color, CRGB end_color, uint16_t total, uint16_t offset) {
+  offset = offset * 255 / total;
+  CRGB color;
+  color.r = start_color.r + (((end_color.r - start_color.r) * offset) / 255);
+  color.g = start_color.g + (((end_color.g - start_color.g) * offset) / 255);
+  color.b = start_color.b + (((end_color.b - start_color.b) * offset) / 255);
+  return color;
+}
 
-  if (wave->start_col > wave->end_col) {
-    wave->start_col -= wave->len;
-    wave->end_col -= wave->len;
+void set_circle_index(uint8_t index, display_t *displays, CRGB color){
+  index = index % (12 * LEDS_PER_SEGMENT);
+  display_t *display;
+  if (index < LEDS_PER_SEGMENT){
+    display = displays;
+  } else if (index >= LEDS_PER_SEGMENT && index < 5 * LEDS_PER_SEGMENT){
+    display = displays + ((index - LEDS_PER_SEGMENT) / LEDS_PER_SEGMENT);
+    index = (index % LEDS_PER_SEGMENT) + LEDS_PER_SEGMENT;
+  } else if (index >= 5 * LEDS_PER_SEGMENT && index < 7 * LEDS_PER_SEGMENT) {
+    display = displays + 3;
+    index = (index % (2 * LEDS_PER_SEGMENT)) + (LEDS_PER_SEGMENT * 2);
+  } else if (index >= 7 * LEDS_PER_SEGMENT && index < 11 * LEDS_PER_SEGMENT) {
+    display = displays + (3 - ((index - (LEDS_PER_SEGMENT * 7)) / LEDS_PER_SEGMENT));
+    index = (index % LEDS_PER_SEGMENT) + (LEDS_PER_SEGMENT * 4);
+  } else {
+    display = displays;
+    index = (index % LEDS_PER_SEGMENT) + (LEDS_PER_SEGMENT * 5);
+  }
+  display->leds[index] = color;
+}
+
+void show_rgb_circle(rgb_wave *wave, display_t *display_list, uint8_t progress) {
+  wave->start_pos += progress;
+  wave->end_pos += progress;
+
+  if (wave->start_pos > wave->end_pos) {
+    wave->start_pos -= wave->len;
+    wave->end_pos -= wave->len;
   }
 
-  uint8_t start = wave->start_col;
-  uint8_t end = wave->end_col;
+  uint8_t start = wave->start_pos;
+  uint8_t end = wave->end_pos;
 
   CRGB sc = wave->start_color;
   CRGB ec = wave->end_color;
@@ -278,11 +300,31 @@ void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress) {
 
   for (uint8_t i = 0; i < total_distance; i++) {
     // Calculate the current
-    uint16_t current_distance = (i * 255) / total_distance;
-    CRGB color;
-    color.r = sc.r + (((ec.r - sc.r) * current_distance) / 255);
-    color.g = sc.g + (((ec.g - sc.g) * current_distance) / 255);
-    color.b = sc.b + (((ec.b - sc.b) * current_distance) / 255);
+    CRGB color = calculate_offset_color(sc, ec, total_distance, i);
+    set_circle_index((start + i) % wave->len, display_list, color);
+  }
+}
+
+
+void show_rgb_wave(rgb_wave *wave, display_t *display_list, uint8_t progress) {
+  wave->start_pos += progress;
+  wave->end_pos += progress;
+
+  if (wave->start_pos > wave->end_pos) {
+    wave->start_pos -= wave->len;
+    wave->end_pos -= wave->len;
+  }
+
+  uint8_t start = wave->start_pos;
+  uint8_t end = wave->end_pos;
+
+  CRGB sc = wave->start_color;
+  CRGB ec = wave->end_color;
+  uint16_t total_distance = end - start;
+
+  for (uint8_t i = 0; i < total_distance; i++) {
+    // Calculate the current
+    CRGB color = calculate_offset_color(sc, ec, total_distance, i);
     set_column((start + i) % wave->len, display_list, color);
   }
 }
