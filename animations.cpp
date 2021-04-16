@@ -68,3 +68,12 @@ void init_waves(rgb_wave *wave_storage, CRGB *colors, uint8_t color_count, uint8
     }
   }
 }
+
+uint8_t display_segment_transition(segment_transition_t *transition, uint8_t progress) {
+  display_t previous_display;
+  display_t next_display;
+  clear_display(&previous_display);
+  clear_display(&next_display);
+  set_segments(&previous_display, transition->previous_segments, CRGB(255, 255, 255));
+  set_segments(&next_display, transition->next_segments, CRGB(255, 255, 255));
+}
