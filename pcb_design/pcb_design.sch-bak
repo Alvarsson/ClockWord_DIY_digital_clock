@@ -1116,9 +1116,9 @@ Wire Wire Line
 Wire Wire Line
 	1100 6700 1300 6700
 Text Label 4150 4300 0    50   ~ 0
-SDL
+SDA
 Text Label 3850 4300 0    50   ~ 0
-SCA
+SCL
 Wire Wire Line
 	3850 4400 3850 4300
 Connection ~ 3850 4400

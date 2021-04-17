@@ -19,7 +19,7 @@ U 1 1 606E986E
 P 1600 2000
 F 0 "Clk1" V 1554 2131 50  0000 L CNN
 F 1 "16Mhz" V 1645 2131 50  0000 L CNN
-F 2 "Crystal:Crystal_HC52-8mm_Vertical" H 1600 2000 50  0001 C CNN
+F 2 "Crystal:Crystal_HC49-4H_Vertical" H 1600 2000 50  0001 C CNN
 F 3 "~" H 1600 2000 50  0001 C CNN
 	1    1600 2000
 	0    1    1    0   
