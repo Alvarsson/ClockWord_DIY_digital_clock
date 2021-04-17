@@ -688,9 +688,9 @@ Wire Wire Line
 Wire Wire Line
 	4350 4600 3800 4600
 Wire Wire Line
-	3800 4500 4350 4500
+	3800 4500 4150 4500
 Wire Wire Line
-	4350 4400 3800 4400
+	4350 4400 3850 4400
 Wire Wire Line
 	4350 4100 3800 4100
 Wire Wire Line
@@ -1115,4 +1115,63 @@ Wire Wire Line
 	6450 900  6650 900 
 Wire Wire Line
 	1100 6700 1300 6700
+Text Label 4150 4300 0    50   ~ 0
+SDA
+Text Label 3850 4300 0    50   ~ 0
+SCL
+Wire Wire Line
+	3850 4400 3850 4300
+Connection ~ 3850 4400
+Wire Wire Line
+	3850 4400 3800 4400
+Wire Wire Line
+	4150 4300 4150 4500
+Connection ~ 4150 4500
+Wire Wire Line
+	4150 4500 4350 4500
+$Comp
+L Connector_Generic:Conn_01x04 J15
+U 1 1 607E0A85
+P 6100 5250
+F 0 "J15" H 6180 5242 50  0000 L CNN
+F 1 "Conn_01x04" H 6180 5151 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 6100 5250 50  0001 C CNN
+F 3 "~" H 6100 5250 50  0001 C CNN
+	1    6100 5250
+	1    0    0    -1  
+$EndComp
+Text Label 5700 5250 2    50   ~ 0
+SDA
+Text Label 5700 5150 2    50   ~ 0
+SCL
+$Comp
+L power:+5V #PWR0127
+U 1 1 607E56A4
+P 5700 5350
+F 0 "#PWR0127" H 5700 5200 50  0001 C CNN
+F 1 "+5V" V 5715 5478 50  0000 L CNN
+F 2 "" H 5700 5350 50  0001 C CNN
+F 3 "" H 5700 5350 50  0001 C CNN
+	1    5700 5350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR0128
+U 1 1 607E6049
+P 5700 5450
+F 0 "#PWR0128" H 5700 5200 50  0001 C CNN
+F 1 "GND" V 5705 5322 50  0000 R CNN
+F 2 "" H 5700 5450 50  0001 C CNN
+F 3 "" H 5700 5450 50  0001 C CNN
+	1    5700 5450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5700 5150 5900 5150
+Wire Wire Line
+	5900 5250 5700 5250
+Wire Wire Line
+	5700 5350 5900 5350
+Wire Wire Line
+	5900 5450 5700 5450
 $EndSCHEMATC
