@@ -11,7 +11,8 @@
 #define COLUMNS_PER_DISPLAY (LEDS_PER_SEGMENT + 2)
 #define DISPLAY_COLUMN_GAP 1
 #define DISPLAY_DOTS_GAP 4
-#define ANIMATION_COLUMNS ((4 * COLUMNS_PER_DISPLAY) + (2 * DISPLAY_COLUMN_GAP) + DISPLAY_DOTS_GAP)
+#define COLUMNS ((4 * COLUMNS_PER_DISPLAY) + (2 * DISPLAY_COLUMN_GAP) + DISPLAY_DOTS_GAP)
+#define ROWS (2 * LEDS_PER_SEGMENT)
 
 #define DISPLAY0_PIN 2
 #define DISPLAY1_PIN 3
@@ -41,5 +42,6 @@ void set_inverted_segments(display_t *display, const char *segments, CRGB color)
 void clear_display(display_t *display);
 void set_column(display_t *display_list, uint8_t column, CRGB color);
 void set_circle_index(display_t *display_list, uint8_t index, CRGB color);
-
+uint8_t get_led_at_xy(display_t *display_list, uint8_t horizontal, uint8_t vertical, CRGB **led);
+uint8_t is_full_column(uint8_t column);
 #endif

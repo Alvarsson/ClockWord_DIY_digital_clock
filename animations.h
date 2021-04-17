@@ -18,4 +18,6 @@ void init_waves(rgb_wave *wave_storage, CRGB *colors, uint8_t color_count, uint8
 void display_rgb_wave(display_t *display_list, rgb_wave *wave, uint8_t progress);
 void display_rgb_circle(display_t *display_list, rgb_wave *wave, uint8_t progress);
 
+
+
 #endif

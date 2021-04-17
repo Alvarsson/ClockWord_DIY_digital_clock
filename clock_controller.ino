@@ -91,7 +91,7 @@ void get_time() {
 void loop() {
   // put your main code here, to run repeatedly:
   static int count = 0;
-  delay(10);
+  delay(100);
 
   if (current_time_seconds % 60 == 0) {
     get_time();
@@ -101,10 +101,6 @@ void loop() {
     current_time_seconds += 1;
     count = 0;
   }
-
-  for (int i = 0; i < COLOR_COUNT; i++) {
-    display_rgb_circle(displays, waves + i,  1);
-  }
-
+  set_segments(displays, "abcgf", CRGB(50, 0, 0));
   FastLED.show();
 }

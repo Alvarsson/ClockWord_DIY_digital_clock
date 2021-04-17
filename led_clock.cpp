@@ -36,33 +36,18 @@ void set_segments(display_t *display, const char* segments, CRGB color) {
   } while (*segments++ != 0);
 }
 
-void set_column(uint8_t column, display_t *displays_list, CRGB color) {
-
-  uint8_t should_display = 0;
-  if (column < COLUMNS_PER_DISPLAY) {
-    should_display = 1;
-  } else if (column >= COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP && column < 2 * COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP) {
-    column -= DISPLAY_COLUMN_GAP;
-    should_display = 1;
-  } else if (column >= 2 * COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP && column < 3 * COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP) {
-    column -= DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP;
-    should_display = 1;
-  } else if (column >= 3 * COLUMNS_PER_DISPLAY + 2 * DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP && column < 4 * COLUMNS_PER_DISPLAY + 2 * DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP) {
-    column -= (2 * DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP);
-    should_display = 1;
+void set_column(uint8_t column, display_t *display, CRGB color) {
+  uint8_t count = 0;
+  if (is_full_column(column)) {
+    count = LEDS_PER_SEGMENT;
+  } else {
+    count = 3;
   }
 
-  if (should_display) {
-    display_t *display = &displays_list[column / COLUMNS_PER_DISPLAY];
-    column = column % COLUMNS_PER_DISPLAY;
-    if (column == 0) {
-      set_segments(display, "af", color);
-    } else if (column == LEDS_PER_SEGMENT + 1) {
-      set_segments(display, "cd", color);
-    } else {
-      display->leds[LEDS_PER_SEGMENT + column - 1] = color;
-      display->leds[(5 * LEDS_PER_SEGMENT) - column] = color;
-      display->leds[(6 * LEDS_PER_SEGMENT) + column - 1] = color;
+  for (count; count > 0; count--) {
+    CRGB *led_ptr;
+    if (get_led_at_xy(display, column, count, &led_ptr)) {
+      *led_ptr = color;
     }
   }
 }
@@ -121,4 +106,49 @@ void set_inverted_segments(display_t *display, const char* segments, CRGB color)
     }
   }
   set_segments(display, segments_to_filter, color);
+}
+
+uint8_t is_full_column(uint8_t column) {
+  return column == 0 || column == COLUMNS_PER_DISPLAY - 1;
+}
+
+// Note: this function treats the LEDs as if they have "fallen down", i.e. there are LEDS_PER_SEGMENT * 2 leds
+// at horizontal = 0, and 3 leds at horizontal = 1
+uint8_t get_led_at_xy(display_t *display, uint8_t horizontal, uint8_t vertical, CRGB **led_ptr) {
+  if ((horizontal == 0 || horizontal == COLUMNS_PER_DISPLAY - 1) && vertical > (LEDS_PER_SEGMENT * 2) - 1) {
+    return 0;
+  }
+
+  if ((horizontal > 0 && horizontal < COLUMNS_PER_DISPLAY - 1) && vertical > 2) {
+    return 0;
+  }
+
+  uint8_t offset = 1;
+
+  if (horizontal == 0) {
+    if (vertical >= LEDS_PER_SEGMENT) {
+      // Segment a
+      offset = vertical - LEDS_PER_SEGMENT; 
+    } else {
+      // Segment f
+      offset = (5 * LEDS_PER_SEGMENT) + vertical;
+    }
+  } else if (horizontal > 0 && horizontal < COLUMNS_PER_DISPLAY - 1) {
+    if (vertical == 2){
+      // Segment b
+      offset = LEDS_PER_SEGMENT + horizontal - 1; 
+    } else if (vertical == 1) {
+      // Segment g
+       offset = (6 * LEDS_PER_SEGMENT) + horizontal - 1;
+    } else {
+      // Segment e
+      offset = (5 * LEDS_PER_SEGMENT) - horizontal;
+    }
+  } else if (horizontal == COLUMNS_PER_DISPLAY - 1) {
+    // Segments c and d
+    offset = (4 * LEDS_PER_SEGMENT) - vertical - 1;
+  }
+  
+  *led_ptr = &display->leds[offset];
+  return 1;
 }
