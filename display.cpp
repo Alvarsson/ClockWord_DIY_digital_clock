@@ -117,14 +117,14 @@ uint8_t get_led_at_xy(display_t *display, uint8_t horizontal, uint8_t vertical, 
 }
 
 void set_column(display_t *display, uint8_t column, CRGB color) {
-  uint8_t count = 0;
+  int8_t count = 0;
   if (is_full_column(column)) {
-    count = LEDS_PER_SEGMENT;
+    count = LEDS_PER_SEGMENT * 2;
   } else {
     count = 3;
   }
 
-  for (count; count > 0; count--) {
+  for (count; count >= 0; count--) {
     CRGB *led_ptr;
     if (get_led_at_xy(display, column, count, &led_ptr)) {
       *led_ptr = color;

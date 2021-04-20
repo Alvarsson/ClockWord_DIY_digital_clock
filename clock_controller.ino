@@ -92,12 +92,14 @@ void loop() {
   static uint8_t count = 0;
   delay(10);
 
+  current_time_seconds++;
   if (current_time_seconds % 60 == 0) {
-    // get_time();
+     get_time();
   }
 
   for (uint8_t i = 0; i < COLOR_COUNT; i++){
       display_rgb_wave(displays, waves + i, 1);     
   }
+  display_time(displays, current_time_seconds);
   FastLED.show();
 }

@@ -32,6 +32,21 @@ void display_rgb_circle(display_t *display_list, rgb_wave *wave, uint8_t progres
   }
 }
 
+uint8_t get_display_column(uint8_t animation_column, uint8_t *display_column) {
+  if (animation_column < COLUMNS_PER_DISPLAY) {
+    *display_column = animation_column;
+  } else if (animation_column >= COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP && animation_column < 2 * COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP){
+    *display_column = animation_column - DISPLAY_COLUMN_GAP;
+  } else if (animation_column >= 2 * COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP && animation_column < 3 * COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP){
+    *display_column = animation_column - (DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP);
+  } else if (animation_column >= 3 * COLUMNS_PER_DISPLAY + 2 * DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP && animation_column < 4 * COLUMNS_PER_DISPLAY + 2 * DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP) {
+    *display_column = animation_column - (2 * DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP);
+  } else {
+    return 0;
+  }
+  return 1;
+}
+
 
 void display_rgb_wave(display_t *display_list, rgb_wave *wave, uint8_t progress) {
   wave->start_pos += progress;
@@ -52,7 +67,12 @@ void display_rgb_wave(display_t *display_list, rgb_wave *wave, uint8_t progress)
   for (uint8_t i = 0; i < total_distance; i++) {
     // Calculate the current
     CRGB color = calculate_offset_color(sc, ec, total_distance, i);
-    set_column(display_list, (start + i) % wave->len, color);
+    uint8_t display_column;
+    
+    if (get_display_column((start + i) % wave->len, &display_column)) {
+      display_t *display = display_list + (display_column / COLUMNS_PER_DISPLAY); 
+      set_column(display, (display_column) % COLUMNS_PER_DISPLAY, color);
+    }
   }
 }
 

@@ -3,6 +3,11 @@
 
 #include "clock.h"
 
+#define ROWS ((2 * LEDS_PER_SEGMENT) + 2)
+#define DISPLAY_COLUMN_GAP 2
+#define DISPLAY_DOTS_GAP 4
+#define ANIMATION_COLUMNS ((4 * COLUMNS_PER_DISPLAY) + (2 * DISPLAY_COLUMN_GAP) + DISPLAY_DOTS_GAP)
+
 typedef struct {
   CRGB start_color;
   CRGB end_color;
