@@ -1,7 +1,7 @@
 #ifndef ANIMATIONS_H
 #define ANIMATIONS_H
 
-#include "led_clock.h"
+#include "clock.h"
 
 typedef struct {
   CRGB start_color;

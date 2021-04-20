@@ -1,4 +1,4 @@
-#include "led_clock.h"
+#include "display.h"
 
 const char *zero = "abcdef";
 const char *one = "cd";
@@ -34,43 +34,6 @@ void set_segments(display_t *display, const char* segments, CRGB color) {
 
     }
   } while (*segments++ != 0);
-}
-
-void set_column(uint8_t column, display_t *display, CRGB color) {
-  uint8_t count = 0;
-  if (is_full_column(column)) {
-    count = LEDS_PER_SEGMENT;
-  } else {
-    count = 3;
-  }
-
-  for (count; count > 0; count--) {
-    CRGB *led_ptr;
-    if (get_led_at_xy(display, column, count, &led_ptr)) {
-      *led_ptr = color;
-    }
-  }
-}
-
-void set_circle_index(display_t *display_list, uint8_t index, CRGB color) {
-  index = index % (12 * LEDS_PER_SEGMENT);
-  display_t *display;
-  if (index < LEDS_PER_SEGMENT) {
-    display = display_list;
-  } else if (index >= LEDS_PER_SEGMENT && index < 5 * LEDS_PER_SEGMENT) {
-    display = display_list + ((index - LEDS_PER_SEGMENT) / LEDS_PER_SEGMENT);
-    index = (index % LEDS_PER_SEGMENT) + LEDS_PER_SEGMENT;
-  } else if (index >= 5 * LEDS_PER_SEGMENT && index < 7 * LEDS_PER_SEGMENT) {
-    display = display_list + 3;
-    index = (index % (2 * LEDS_PER_SEGMENT)) + (LEDS_PER_SEGMENT * 2);
-  } else if (index >= 7 * LEDS_PER_SEGMENT && index < 11 * LEDS_PER_SEGMENT) {
-    display = display_list + (3 - ((index - (LEDS_PER_SEGMENT * 7)) / LEDS_PER_SEGMENT));
-    index = (index % LEDS_PER_SEGMENT) + (LEDS_PER_SEGMENT * 4);
-  } else {
-    display = display_list;
-    index = (index % LEDS_PER_SEGMENT) + (LEDS_PER_SEGMENT * 5);
-  }
-  display->leds[index] = color;
 }
 
 /** Disable those segments that are not part of the given group of segments.
@@ -151,4 +114,20 @@ uint8_t get_led_at_xy(display_t *display, uint8_t horizontal, uint8_t vertical, 
   
   *led_ptr = &display->leds[offset];
   return 1;
+}
+
+void set_column(display_t *display, uint8_t column, CRGB color) {
+  uint8_t count = 0;
+  if (is_full_column(column)) {
+    count = LEDS_PER_SEGMENT;
+  } else {
+    count = 3;
+  }
+
+  for (count; count > 0; count--) {
+    CRGB *led_ptr;
+    if (get_led_at_xy(display, column, count, &led_ptr)) {
+      *led_ptr = color;
+    }
+  }
 }

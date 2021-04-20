@@ -1,5 +1,4 @@
 #include "animations.h"
-#include "led_clock.h"
 #include <SoftwareSerial.h>
 
 #define SW_RX 6
@@ -90,17 +89,15 @@ void get_time() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  static int count = 0;
-  delay(100);
+  static uint8_t count = 0;
+  delay(10);
 
   if (current_time_seconds % 60 == 0) {
-    get_time();
+    // get_time();
   }
 
-  if (count++ == 100) {
-    current_time_seconds += 1;
-    count = 0;
+  for (uint8_t i = 0; i < COLOR_COUNT; i++){
+      display_rgb_wave(displays, waves + i, 1);     
   }
-  set_segments(displays, "abcgf", CRGB(50, 0, 0));
   FastLED.show();
 }
