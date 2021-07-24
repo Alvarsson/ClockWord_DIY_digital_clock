@@ -1,8 +1,8 @@
 #include "clock.h"
 
-void set_circle_index(display_t *display_list, uint8_t index, CRGB color) {
+void set_circle_index(clock_t *clock, uint8_t index, CRGB color) {
   index = index % (12 * LEDS_PER_SEGMENT);
-  display_t *display = display_list;
+  display_t *display = clock->displays;
   if (index < LEDS_PER_SEGMENT) {
     // Top left column
   } else if (index >= LEDS_PER_SEGMENT && index < 5 * LEDS_PER_SEGMENT) {

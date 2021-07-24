@@ -11,51 +11,58 @@
 #define MINUTES_LSD_OFFSET 28
 #define SECONDS_MSD_OFFSET 30
 #define SECONDS_LSD_OFFSET 31
+#define COLOR_COUNT 4
 
 SoftwareSerial radioSerial = SoftwareSerial(SW_RX, SW_TX);
 
-display_t displays[DISPLAYS];
+CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(50, 0, 50)};
+rgb_wave waves[COLOR_COUNT];
+clock_t clock;
 uint32_t current_time_seconds = 49020 - 60;
+uint8_t timer_overflow_count;
 
-void display_time(display_t *display_list, uint32_t seconds) {
+ISR(TIMER1_COMPA_vect) {
+  TCNT0 = 0;
+  timer_overflow_count++;
+  if (timer_overflow_count == 250) {
+    clock.dots_on = !clock.dots_on;
+    current_time_seconds++;
+    timer_overflow_count = 0;
+  }
+}
+
+void display_time(clock_t *clock, uint32_t seconds) {
   uint32_t days = (seconds / 86400);
   uint32_t hours = (seconds % 86400) / 3600;
   uint32_t minutes = (seconds % 3600) / 60;
 
-  disable_incorrect_segments(&displays[0], numbers[hours / 10]);
-  disable_incorrect_segments(&displays[1], numbers[hours % 10]);
-  disable_incorrect_segments(&displays[2], numbers[minutes / 10]);
-  disable_incorrect_segments(&displays[3], numbers[minutes % 10]);
+  disable_incorrect_segments(&clock->displays[0], numbers[hours / 10]);
+  disable_incorrect_segments(&clock->displays[1], numbers[hours % 10]);
+  disable_incorrect_segments(&clock->displays[2], numbers[minutes / 10]);
+  disable_incorrect_segments(&clock->displays[3], numbers[minutes % 10]);
 
 }
 
-#define COLOR_COUNT 4
-CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(50, 0, 50)};
-rgb_wave waves[COLOR_COUNT];
-
 void setup() {
-  FastLED.addLeds<NEOPIXEL, DISPLAY0_PIN>(displays[0].leds, LEDS_PER_DISPLAY);
-  FastLED.addLeds<NEOPIXEL, DISPLAY1_PIN>(displays[1].leds, LEDS_PER_DISPLAY);
-  FastLED.addLeds<NEOPIXEL, DISPLAY2_PIN>(displays[2].leds, LEDS_PER_DISPLAY);
-  FastLED.addLeds<NEOPIXEL, DISPLAY3_PIN>(displays[3].leds, LEDS_PER_DISPLAY);
+  cli();
+  // 125 overruns = 1 second (clock @ 16Mhz)
+  OCR1A = 250;
+  TCCR1B = (1 << CS12);
+  TIMSK1 = (1 << OCIE1A);
+  sei();
+
+  clock.dots_on = 1;
+
+  FastLED.addLeds<NEOPIXEL, DISPLAY0_PIN>(clock.displays[0].leds, LEDS_PER_DISPLAY);
+  FastLED.addLeds<NEOPIXEL, DISPLAY1_PIN>(clock.displays[1].leds, LEDS_PER_DISPLAY);
+  FastLED.addLeds<NEOPIXEL, DISPLAY2_PIN>(clock.displays[2].leds, LEDS_PER_DISPLAY);
+  FastLED.addLeds<NEOPIXEL, DISPLAY3_PIN>(clock.displays[3].leds, LEDS_PER_DISPLAY);
+  FastLED.addLeds<NEOPIXEL, DOT_UP_PIN>(clock.dots, LEDS_PER_DOT);
+  FastLED.addLeds<NEOPIXEL, DOT_DOWN_PIN>(clock.dots + LEDS_PER_DOT, LEDS_PER_DOT);
   FastLED.show();
 
-
-  pinMode(SW_RX, INPUT);
-  pinMode(SW_TX, OUTPUT);
-
-  Serial.begin(4800);
-
-  radioSerial.begin(4800);
-  radioSerial.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
-  // Discard response
-  while (radioSerial.available()) radioSerial.read();
-
-  delay(100);
-
-  while (radioSerial.available()) radioSerial.read();
-
   init_waves(waves, wave_colors, COLOR_COUNT, LEDS_PER_SEGMENT * 12);
+
 }
 
 void get_time() {
@@ -87,19 +94,13 @@ void get_time() {
 
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  static uint8_t count = 0;
-  delay(10);
-
-  current_time_seconds++;
-  if (current_time_seconds % 60 == 0) {
-     get_time();
-  }
-
+void loop() { 
+  delay(16);
   for (uint8_t i = 0; i < COLOR_COUNT; i++){
-      display_rgb_wave(displays, waves + i, 1);     
+      display_rgb_wave(&clock, waves + i, 1);     
   }
-  display_time(displays, current_time_seconds);
+  display_time(&clock, current_time_seconds);
+  cli();
   FastLED.show();
+  sei();
 }

@@ -9,7 +9,7 @@ CRGB calculate_offset_color(CRGB start_color, CRGB end_color, uint16_t total, ui
   return color;
 }
 
-void display_rgb_circle(display_t *display_list, rgb_wave *wave, uint8_t progress) {
+void display_rgb_circle(clock_t *clock, rgb_wave *wave, uint8_t progress) {
   wave->start_pos += progress;
   wave->end_pos += progress;
 
@@ -28,7 +28,7 @@ void display_rgb_circle(display_t *display_list, rgb_wave *wave, uint8_t progres
   for (uint8_t i = 0; i < total_distance; i++) {
     // Calculate the current
     CRGB color = calculate_offset_color(sc, ec, total_distance, i);
-    set_circle_index(display_list, (start + i) % wave->len, color);
+    set_circle_index(clock, (start + i) % wave->len, color);
   }
 }
 
@@ -48,7 +48,7 @@ uint8_t get_display_column(uint8_t animation_column, uint8_t *display_column) {
 }
 
 
-void display_rgb_wave(display_t *display_list, rgb_wave *wave, uint8_t progress) {
+void display_rgb_wave(clock_t *clock, rgb_wave *wave, uint8_t progress) {
   wave->start_pos += progress;
   wave->end_pos += progress;
 
@@ -68,9 +68,18 @@ void display_rgb_wave(display_t *display_list, rgb_wave *wave, uint8_t progress)
     // Calculate the current
     CRGB color = calculate_offset_color(sc, ec, total_distance, i);
     uint8_t display_column;
-    
-    if (get_display_column((start + i) % wave->len, &display_column)) {
-      display_t *display = display_list + (display_column / COLUMNS_PER_DISPLAY); 
+    uint8_t offset = (start + i) % wave->len;
+    /// The dots
+    if (offset == 2 * COLUMNS_PER_DISPLAY + DISPLAY_COLUMN_GAP + DISPLAY_DOTS_GAP/2) {
+      for (int x = 0; x <  LEDS_PER_DOT * DOTS; x++){
+        if (clock->dots_on) {
+          clock->dots[x] = color;
+        } else {
+          clock->dots[x] = CRGB(0, 0, 0);
+        }
+      }
+    } else if (get_display_column((start + i) % wave->len, &display_column)) {
+      display_t *display = clock->displays + (display_column / COLUMNS_PER_DISPLAY); 
       set_column(display, (display_column) % COLUMNS_PER_DISPLAY, color);
     }
   }
