@@ -13,7 +13,7 @@ uint8_t timer_overflow_count;
 
 // Serial and FastLED also use
 // interrupts, so don't use them/call
-// functions that use them from this 
+// functions that use them from this
 // interrupt handler
 ISR(TIMER1_COMPA_vect) {
   TCNT0 = 0;
@@ -45,6 +45,8 @@ void display_time(clock_t *clock, uint32_t seconds) {
 #define SECONDS_MSD_OFFSET 6
 #define SECONDS_LSD_OFFSET 7
 void get_time() {
+  while (Serial2.available()) Serial2.read();
+  
   uint8_t all_str[TIME_CHARS];
   Serial.println("Getting time");
   Serial2.write("AT+CIPSNTPTIME?\r\n", 18);
@@ -53,13 +55,13 @@ void get_time() {
   while (space_count < 3) {
     while (Serial2.available() == 0);
     uint8_t input = Serial2.read();
-    if (input == ' '){
-      space_count++;  
+    if (input == ' ') {
+      space_count++;
     }
   }
 
   Serial.println("Done");
-  
+
   Serial2.readBytes(all_str, TIME_CHARS);
   while (Serial2.available()) Serial2.read();
 
@@ -73,7 +75,7 @@ void get_time() {
 
 #undef ECHO
 #ifdef ECHO
-void setup(){
+void setup() {
   Serial.begin(115200);
   Serial2.begin(115200);
   Serial.println("Begin!");
@@ -95,14 +97,14 @@ void loop() {
 void setup() {
   Serial.begin(115200);
   Serial2.begin(115200);
-  
+
   Serial.println("Setting time!");
   // Configure ESP8266 to configure NTP
   Serial2.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
 
   delay(500);
-  while(Serial2.available() > 0) Serial2.read();
-  
+  while (Serial2.available() > 0) Serial2.read();
+
   Serial.println("Configuring timer");
   // 125 overruns = 1 second (clock @ 16Mhz)
   OCR1A = 250;
@@ -125,9 +127,16 @@ void setup() {
 }
 
 void loop() {
+  delay(16);
   if (current_time_seconds % 120 == 0) {
     get_time();
   }
   
+  for (uint8_t i = 0; i < COLOR_COUNT; i++){
+      display_rgb_wave(&clock, waves + i, 1);     
+  }
+  display_time(&clock, current_time_seconds);
+  FastLED.show();
+
 }
 #endif

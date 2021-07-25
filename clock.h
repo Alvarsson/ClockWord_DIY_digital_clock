@@ -3,8 +3,8 @@
 #define DISPLAYS 4
 #define LEDS_PER_DOT 3
 #define DOTS 2
-#define DOT_UP_PIN 38 // A4
-#define DOT_DOWN_PIN 39 // A5
+#define DOT_UP_PIN 33 // C4
+#define DOT_DOWN_PIN 32 // C5
 
 typedef struct {
   display_t displays[DISPLAYS];

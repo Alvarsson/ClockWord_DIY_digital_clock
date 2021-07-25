@@ -11,10 +11,10 @@
 
 
 
-#define DISPLAY0_PIN 40
-#define DISPLAY1_PIN 41 
-#define DISPLAY2_PIN 42
-#define DISPLAY3_PIN 43 
+#define DISPLAY0_PIN 37 // C0
+#define DISPLAY1_PIN 36 // C1
+#define DISPLAY2_PIN 35 // C2
+#define DISPLAY3_PIN 34 // C3
 
 typedef struct {
   CRGB leds[LEDS_PER_DISPLAY];
