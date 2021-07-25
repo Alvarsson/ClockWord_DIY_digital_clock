@@ -1,19 +1,9 @@
 #include "animations.h"
-#include <SoftwareSerial.h>
+
 
 #define SW_RX 6
 #define SW_TX 7
-#define START_CHARS 17
-#define TIME_CHARS 42
-#define HOURS_MSD_OFFSET 24
-#define HOURS_LSD_OFFSET 25
-#define MINUTES_MSD_OFFSET 27
-#define MINUTES_LSD_OFFSET 28
-#define SECONDS_MSD_OFFSET 30
-#define SECONDS_LSD_OFFSET 31
 #define COLOR_COUNT 4
-
-SoftwareSerial radioSerial = SoftwareSerial(SW_RX, SW_TX);
 
 CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(50, 0, 50)};
 rgb_wave waves[COLOR_COUNT];
@@ -21,6 +11,10 @@ clock_t clock;
 uint32_t current_time_seconds = 49020 - 60;
 uint8_t timer_overflow_count;
 
+// Serial and FastLED also use
+// interrupts, so don't use them/call
+// functions that use them from this 
+// interrupt handler
 ISR(TIMER1_COMPA_vect) {
   TCNT0 = 0;
   timer_overflow_count++;
@@ -43,16 +37,79 @@ void display_time(clock_t *clock, uint32_t seconds) {
 
 }
 
+#define TIME_CHARS 8
+#define HOURS_MSD_OFFSET 0
+#define HOURS_LSD_OFFSET 1
+#define MINUTES_MSD_OFFSET 3
+#define MINUTES_LSD_OFFSET 4
+#define SECONDS_MSD_OFFSET 6
+#define SECONDS_LSD_OFFSET 7
+void get_time() {
+  uint8_t all_str[TIME_CHARS];
+  Serial.println("Getting time");
+  Serial2.write("AT+CIPSNTPTIME?\r\n", 18);
+
+  int space_count = 0;
+  while (space_count < 3) {
+    while (Serial2.available() == 0);
+    uint8_t input = Serial2.read();
+    if (input == ' '){
+      space_count++;  
+    }
+  }
+
+  Serial.println("Done");
+  
+  Serial2.readBytes(all_str, TIME_CHARS);
+  while (Serial2.available()) Serial2.read();
+
+  uint32_t hours = ((all_str[HOURS_MSD_OFFSET] - '0') * 10) + (all_str[HOURS_LSD_OFFSET] - '0');
+  uint32_t minutes = ((all_str[MINUTES_MSD_OFFSET] - '0') * 10) + (all_str[MINUTES_LSD_OFFSET] - '0');
+  uint32_t seconds = ((all_str[SECONDS_MSD_OFFSET] - '0') * 10) + (all_str[SECONDS_LSD_OFFSET] - '0');
+
+  current_time_seconds = (hours * 3600) + (minutes * 60) + seconds;
+  Serial.println(current_time_seconds);
+}
+
+#undef ECHO
+#ifdef ECHO
+void setup(){
+  Serial.begin(115200);
+  Serial2.begin(115200);
+  Serial.println("Begin!");
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    uint8_t val = Serial.read();
+    Serial2.write(val);
+  }
+  if (Serial2.available() > 0) {
+    uint8_t val = Serial2.read();
+    Serial.write(val);
+  }
+}
+
+#else
+
 void setup() {
-  cli();
+  Serial.begin(115200);
+  Serial2.begin(115200);
+  
+  Serial.println("Setting time!");
+  // Configure ESP8266 to configure NTP
+  Serial2.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
+
+  delay(500);
+  while(Serial2.available() > 0) Serial2.read();
+  
+  Serial.println("Configuring timer");
   // 125 overruns = 1 second (clock @ 16Mhz)
   OCR1A = 250;
   TCCR1B = (1 << CS12);
   TIMSK1 = (1 << OCIE1A);
-  sei();
 
-  clock.dots_on = 1;
-
+  Serial.println("Adding FastLED leds");
   FastLED.addLeds<NEOPIXEL, DISPLAY0_PIN>(clock.displays[0].leds, LEDS_PER_DISPLAY);
   FastLED.addLeds<NEOPIXEL, DISPLAY1_PIN>(clock.displays[1].leds, LEDS_PER_DISPLAY);
   FastLED.addLeds<NEOPIXEL, DISPLAY2_PIN>(clock.displays[2].leds, LEDS_PER_DISPLAY);
@@ -61,46 +118,16 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, DOT_DOWN_PIN>(clock.dots + LEDS_PER_DOT, LEDS_PER_DOT);
   FastLED.show();
 
+
+  Serial.println("Initializing waves");
   init_waves(waves, wave_colors, COLOR_COUNT, LEDS_PER_SEGMENT * 12);
 
 }
 
-void get_time() {
-  uint8_t all_str[TIME_CHARS];
-
-  radioSerial.print("AT+CIPSNTPTIME?\r\n");
-  radioSerial.readBytes(all_str, START_CHARS);
-  radioSerial.readBytes(all_str, TIME_CHARS);
-
-  // Don't remove printouts: they make it work?
-  Serial.println("Time chars: ");
-  for (int i = 0; i < TIME_CHARS; i++) {
-    Serial.print((char) all_str[i]);
+void loop() {
+  if (current_time_seconds % 120 == 0) {
+    get_time();
   }
-  Serial.println("");
-  Serial.println("Time chars done");
-
-  Serial.println("-----");
-  Serial.println((char) all_str[HOURS_LSD_OFFSET]);
-  Serial.println("-----");
-
-  uint32_t hours = ((all_str[HOURS_MSD_OFFSET] - '0') * 10) + (all_str[HOURS_LSD_OFFSET] - '0');
-  uint32_t minutes = ((all_str[MINUTES_MSD_OFFSET] - '0') * 10) + (all_str[MINUTES_LSD_OFFSET] - '0');
-  uint32_t seconds = ((all_str[SECONDS_MSD_OFFSET] - '0') * 10) + (all_str[SECONDS_LSD_OFFSET] - '0');
-
-  current_time_seconds = (hours * 3600) + (minutes * 60) + seconds;
-
-  while (radioSerial.available()) radioSerial.read();
-
+  
 }
-
-void loop() { 
-  delay(16);
-  for (uint8_t i = 0; i < COLOR_COUNT; i++){
-      display_rgb_wave(&clock, waves + i, 1);     
-  }
-  display_time(&clock, current_time_seconds);
-  cli();
-  FastLED.show();
-  sei();
-}
+#endif
