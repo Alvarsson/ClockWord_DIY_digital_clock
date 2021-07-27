@@ -23,3 +23,16 @@ void set_circle_index(clock_t *clock, uint8_t index, CRGB color) {
   }
   display->leds[index] = color;
 }
+
+void set_clock_color(clock_t *clock, CRGB color) {
+  for (int i = 0; i < DISPLAYS; i++){
+    set_display_color(&clock->displays[i], color);
+  }
+  for (int i = 0; i < DOTS * LEDS_PER_DOT; i++){
+    if (clock->dots_on) {
+      clock->dots[i] = color;
+    } else {
+      clock->dots[i] = CRGB(0, 0, 0);
+    }
+  }
+}

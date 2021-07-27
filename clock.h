@@ -13,3 +13,4 @@ typedef struct {
 } clock_t;
 
 void set_circle_index(clock_t *clock, uint8_t index, CRGB color);
+void set_clock_color(clock_t *clock, CRGB color);

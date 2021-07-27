@@ -15,8 +15,12 @@ const char *all = eight;
 const char *numbers[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
 
 void clear_display(display_t *display) {
+  set_display_color(display, CRGB(0, 0, 0));
+}
+
+void set_display_color(display_t *display, CRGB color) {
   for (uint8_t i = 0; i < LEDS_PER_DISPLAY; i++) {
-    display->leds[i] = CRGB(0, 0, 0);
+    display->leds[i] = color;
   }
 }
 

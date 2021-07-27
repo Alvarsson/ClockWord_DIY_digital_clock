@@ -37,6 +37,7 @@ void set_segments(display_t *display, const char *segments, CRGB color);
 void disable_incorrect_segments(display_t *display, const char *number);
 void set_inverted_segments(display_t *display, const char *segments, CRGB color);
 void clear_display(display_t *display);
+void set_display_color(display_t *display, CRGB color);
 uint8_t is_full_column(uint8_t column);
 uint8_t get_led_at_xy(display_t *display, uint8_t horizontal, uint8_t vertical, CRGB **led);
 void set_column(display_t *display, uint8_t column, CRGB color);

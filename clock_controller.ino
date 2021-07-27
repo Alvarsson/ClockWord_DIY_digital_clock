@@ -5,10 +5,14 @@
 #define SW_TX 7
 #define COLOR_COUNT 4
 
-CRGB wave_colors[] = {CRGB(0, 50, 0), CRGB(50, 0, 0), CRGB(50, 50, 0), CRGB(50, 0, 50)};
+#define BRIGHTNESS 100
+
+CRGB wave_colors[] = {CRGB(0, BRIGHTNESS, 0), CRGB(BRIGHTNESS, 0, 0), CRGB(BRIGHTNESS, BRIGHTNESS, 0), CRGB(BRIGHTNESS, 0, BRIGHTNESS)};
 rgb_wave waves[COLOR_COUNT];
 clock_t clock;
-uint32_t current_time_seconds = 49020 - 60;
+uint32_t leet_start = 49020;
+uint32_t leet_end = 49020 + 60;
+uint32_t current_time_seconds = 110;
 uint8_t timer_overflow_count;
 
 // Serial and FastLED also use
@@ -45,32 +49,29 @@ void display_time(clock_t *clock, uint32_t seconds) {
 #define SECONDS_MSD_OFFSET 6
 #define SECONDS_LSD_OFFSET 7
 void get_time() {
-  while (Serial2.available()) Serial2.read();
+  uint32_t now = current_time_seconds;
   
-  uint8_t all_str[TIME_CHARS];
-  Serial.println("Getting time");
   Serial2.write("AT+CIPSNTPTIME?\r\n", 18);
 
   int space_count = 0;
   while (space_count < 3) {
-    while (Serial2.available() == 0);
-    uint8_t input = Serial2.read();
+    int input = Serial2.read();
     if (input == ' ') {
       space_count++;
     }
   }
 
-  Serial.println("Done");
-
+  uint8_t all_str[TIME_CHARS];
   Serial2.readBytes(all_str, TIME_CHARS);
-  while (Serial2.available()) Serial2.read();
 
   uint32_t hours = ((all_str[HOURS_MSD_OFFSET] - '0') * 10) + (all_str[HOURS_LSD_OFFSET] - '0');
   uint32_t minutes = ((all_str[MINUTES_MSD_OFFSET] - '0') * 10) + (all_str[MINUTES_LSD_OFFSET] - '0');
   uint32_t seconds = ((all_str[SECONDS_MSD_OFFSET] - '0') * 10) + (all_str[SECONDS_LSD_OFFSET] - '0');
 
+  Serial2.readBytes(all_str, 6);
+
   current_time_seconds = (hours * 3600) + (minutes * 60) + seconds;
-  Serial.println(current_time_seconds);
+
 }
 
 #undef ECHO
@@ -82,11 +83,11 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
+  while (Serial.available() > 0) {
     uint8_t val = Serial.read();
     Serial2.write(val);
   }
-  if (Serial2.available() > 0) {
+  while (Serial2.available() > 0) {
     uint8_t val = Serial2.read();
     Serial.write(val);
   }
@@ -96,22 +97,20 @@ void loop() {
 
 void setup() {
   Serial.begin(115200);
-  Serial2.begin(115200);
+  Serial2.begin(115200);  
 
-  Serial.println("Setting time!");
-  // Configure ESP8266 to configure NTP
   Serial2.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
 
-  delay(500);
-  while (Serial2.available() > 0) Serial2.read();
+  uint8_t read_bytes = 0;
+  
+  while (read_bytes < 4) {
+    int value = Serial2.read();
+    if (value > 0) {
+      read_bytes++;
+    }
+  }
 
-  Serial.println("Configuring timer");
-  // 125 overruns = 1 second (clock @ 16Mhz)
-  OCR1A = 250;
-  TCCR1B = (1 << CS12);
-  TIMSK1 = (1 << OCIE1A);
 
-  Serial.println("Adding FastLED leds");
   FastLED.addLeds<NEOPIXEL, DISPLAY0_PIN>(clock.displays[0].leds, LEDS_PER_DISPLAY);
   FastLED.addLeds<NEOPIXEL, DISPLAY1_PIN>(clock.displays[1].leds, LEDS_PER_DISPLAY);
   FastLED.addLeds<NEOPIXEL, DISPLAY2_PIN>(clock.displays[2].leds, LEDS_PER_DISPLAY);
@@ -120,20 +119,25 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, DOT_DOWN_PIN>(clock.dots + LEDS_PER_DOT, LEDS_PER_DOT);
   FastLED.show();
 
+  // 125 overruns = 1 second (clock @ 16Mhz)
+  OCR1A = 250;
+  TCCR1B = (1 << CS12);
+  TIMSK1 = (1 << OCIE1A);
 
-  Serial.println("Initializing waves");
   init_waves(waves, wave_colors, COLOR_COUNT, LEDS_PER_SEGMENT * 12);
-
 }
 
 void loop() {
   delay(16);
-  if (current_time_seconds % 120 == 0) {
+  if (current_time_seconds % 30 == 0) {
     get_time();
   }
-  
-  for (uint8_t i = 0; i < COLOR_COUNT; i++){
-      display_rgb_wave(&clock, waves + i, 1);     
+  if (current_time_seconds >= leet_start && current_time_seconds < leet_end){
+    for (uint8_t i = 0; i < COLOR_COUNT; i++){
+      display_rgb_wave(&clock, waves + i, 3);     
+    }
+  } else {
+    set_clock_color(&clock, CRGB(50, 102, 0));    
   }
   display_time(&clock, current_time_seconds);
   FastLED.show();
