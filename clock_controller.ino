@@ -1,6 +1,5 @@
 #include "animations.h"
 
-
 #define SW_RX 6
 #define SW_TX 7
 #define COLOR_COUNT 4
@@ -10,9 +9,13 @@
 CRGB wave_colors[] = {CRGB(0, BRIGHTNESS, 0), CRGB(BRIGHTNESS, 0, 0), CRGB(BRIGHTNESS, BRIGHTNESS, 0), CRGB(BRIGHTNESS, 0, BRIGHTNESS)};
 rgb_wave waves[COLOR_COUNT];
 clock_t clock;
+
 uint32_t leet_start = 49020;
 uint32_t leet_end = 49020 + 60;
-uint32_t current_time_seconds = 110;
+uint32_t yes_start = 15600;
+uint32_t yes_end = 15600 + 60;
+uint32_t current_time_seconds = 10;
+
 uint8_t timer_overflow_count;
 
 // Serial and FastLED also use
@@ -54,10 +57,16 @@ void get_time() {
   Serial2.write("AT+CIPSNTPTIME?\r\n", 18);
 
   int space_count = 0;
+  uint32_t loop_count = 0;
   while (space_count < 3) {
     int input = Serial2.read();
+    Serial.write(input);
     if (input == ' ') {
       space_count++;
+    }
+    loop_count++;
+    if (loop_count == 400000) {
+      return;
     }
   }
 
@@ -119,27 +128,60 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, DOT_DOWN_PIN>(clock.dots + LEDS_PER_DOT, LEDS_PER_DOT);
   FastLED.show();
 
-  // 125 overruns = 1 second (clock @ 16Mhz)
-  OCR1A = 250;
+  OCR1A = 200;
   TCCR1B = (1 << CS12);
   TIMSK1 = (1 << OCIE1A);
 
   init_waves(waves, wave_colors, COLOR_COUNT, LEDS_PER_SEGMENT * 12);
 }
 
+uint8_t direction = 0;
+#define STEP 5
+#define BRIGHTNESS_MIN 10
+#define BRIGHTNESS_MAX 255
+uint8_t brightness = BRIGHTNESS_MIN;
+
 void loop() {
-  delay(16);
+  while (Serial2.available()) Serial2.read();
+  _delay_ms(10);
   if (current_time_seconds % 30 == 0) {
     get_time();
   }
-  if (current_time_seconds >= leet_start && current_time_seconds < leet_end){
-    for (uint8_t i = 0; i < COLOR_COUNT; i++){
-      display_rgb_wave(&clock, waves + i, 3);     
-    }
-  } else {
-    set_clock_color(&clock, CRGB(50, 102, 0));    
+
+  uint8_t is_first_minute = 0;
+  uint16_t seconds_into_hour = current_time_seconds % 3600;
+  int32_t data = current_time_seconds - 43200;
+  if (data < 0) {
+    data *= -1;
   }
-  display_time(&clock, current_time_seconds);
+  data = 102 - ((102 * data) / 43200);
+  if (seconds_into_hour >= 0 && seconds_into_hour < 60) {
+    is_first_minute = 1;
+  }
+  
+  if (direction == 0){
+    brightness += STEP;
+  } else {
+    brightness -= STEP;
+  }
+  if (brightness == BRIGHTNESS_MAX || brightness == BRIGHTNESS_MIN) {
+    direction = !direction;
+  }
+
+  if (current_time_seconds >= 0 && current_time_seconds < 60) {
+    set_clock_color(&clock, CRGB(brightness, 0, 0));
+  } else {
+    if (current_time_seconds >= yes_start && current_time_seconds < yes_end) {
+      set_clock_color(&clock, CRGB(0, brightness, 0));
+    } else if ((current_time_seconds >= leet_start && current_time_seconds < leet_end) || is_first_minute){
+      for (uint8_t i = 0; i < COLOR_COUNT; i++){
+        display_rgb_wave(&clock, waves + i, 3);     
+      }
+    } else {
+      set_clock_color(&clock, CRGB(50, data, 0));    
+    }
+    display_time(&clock, current_time_seconds);
+  }
   FastLED.show();
 
 }
