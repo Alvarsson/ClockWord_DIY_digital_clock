@@ -54,12 +54,12 @@ void display_time(clock_t *clock, uint32_t seconds) {
 void get_time() {
   uint32_t now = current_time_seconds;
   
-  Serial2.write("AT+CIPSNTPTIME?\r\n", 18);
+  Serial3.write("AT+CIPSNTPTIME?\r\n", 18);
 
   int space_count = 0;
   uint32_t loop_count = 0;
   while (space_count < 3) {
-    int input = Serial2.read();
+    int input = Serial3.read();
     Serial.write(input);
     if (input == ' ') {
       space_count++;
@@ -71,15 +71,17 @@ void get_time() {
   }
 
   uint8_t all_str[TIME_CHARS];
-  Serial2.readBytes(all_str, TIME_CHARS);
+  Serial3.readBytes(all_str, TIME_CHARS);
 
   uint32_t hours = ((all_str[HOURS_MSD_OFFSET] - '0') * 10) + (all_str[HOURS_LSD_OFFSET] - '0');
   uint32_t minutes = ((all_str[MINUTES_MSD_OFFSET] - '0') * 10) + (all_str[MINUTES_LSD_OFFSET] - '0');
   uint32_t seconds = ((all_str[SECONDS_MSD_OFFSET] - '0') * 10) + (all_str[SECONDS_LSD_OFFSET] - '0');
 
-  Serial2.readBytes(all_str, 6);
+  Serial3.readBytes(all_str, 6);
 
   current_time_seconds = (hours * 3600) + (minutes * 60) + seconds;
+
+  Serial.print(current_time_seconds);
 
 }
 
@@ -87,17 +89,17 @@ void get_time() {
 #ifdef ECHO
 void setup() {
   Serial.begin(115200);
-  Serial2.begin(115200);
+  Serial3.begin(115200);
   Serial.println("Begin!");
 }
 
 void loop() {
   while (Serial.available() > 0) {
     uint8_t val = Serial.read();
-    Serial2.write(val);
+    Serial3.write(val);
   }
-  while (Serial2.available() > 0) {
-    uint8_t val = Serial2.read();
+  while (Serial3.available() > 0) {
+    uint8_t val = Serial3.read();
     Serial.write(val);
   }
 }
@@ -106,14 +108,14 @@ void loop() {
 
 void setup() {
   Serial.begin(115200);
-  Serial2.begin(115200);  
+  Serial3.begin(115200);  
 
-  Serial2.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
+  Serial3.print("AT+CIPSNTPCFG=1,1,\"se.pool.ntp.org\"\r\n");
 
   uint8_t read_bytes = 0;
   
   while (read_bytes < 4) {
-    int value = Serial2.read();
+    int value = Serial3.read();
     if (value > 0) {
       read_bytes++;
     }
@@ -142,7 +144,7 @@ uint8_t direction = 0;
 uint8_t brightness = BRIGHTNESS_MIN;
 
 void loop() {
-  while (Serial2.available()) Serial2.read();
+  while (Serial3.available()) Serial3.read();
   _delay_ms(10);
   if (current_time_seconds % 30 == 0) {
     get_time();
