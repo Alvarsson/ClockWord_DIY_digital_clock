@@ -4,7 +4,7 @@
 #define LEDS_PER_DOT 3
 #define DOTS 2
 #define DOT_UP_PIN 60 // C4
-#define DOT_DOWN_PIN 58 // C5
+#define DOT_DOWN_PIN 57 // C5
 
 typedef struct {
   display_t displays[DISPLAYS];

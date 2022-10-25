@@ -110,7 +110,7 @@ void setup() {
   Serial.begin(115200);
   Serial3.begin(115200);  
 
-  Serial3.print("AT+CIPSNTPCFG=1,1,\"se.pool.ntp.org\"\r\n");
+  Serial3.print("AT+CIPSNTPCFG=1,2,\"se.pool.ntp.org\"\r\n");
 
   uint8_t read_bytes = 0;
   

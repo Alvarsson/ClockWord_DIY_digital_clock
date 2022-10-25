@@ -11,7 +11,7 @@
 
 
 
-#define DISPLAY0_PIN 57 // C0
+#define DISPLAY0_PIN 58 // C0
 #define DISPLAY1_PIN 56 // C1
 #define DISPLAY2_PIN 55 // C2
 #define DISPLAY3_PIN 54 // C3
